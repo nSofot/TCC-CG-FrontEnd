@@ -9,27 +9,12 @@ import MembersPage from "./control/membersPage";
 import ExCoMembers from "./control/exCoMembers";
 import AddNewMembers from "./control/addCustomerBySecratary";
 import EditMembers from "./control/editCustomerBySecratary";
-// import MembershipPage from "./control/membershipPage";
-// import ReceiptSharesPage from "./control/receiptSharesPage";
-// import ReceiptMembershipPage from "./control/receiptMembershipPage";
 import CashBook from "./control/cashRegister";
-// import LedgerLoan from "./control/ledgerLoan";
-// import MemberLedger from "./control/memberLedger";
 import ReceiptsEntry from "./control/receiptEntryPage";
 import VouchersEntry from "./control/voucherEntryPage";
 import FundTransferPage from "./control/fundTransferPage";
-// import ExpensePage from "./control/expensePage";
-// import OtherExpensePage from "./control/otherExpensePage";
-// import IncomePage from "./control/incomePage";
-// import AddCustomerBySecratary from "./control/addCustomerBySecratary";
-// import EditCustomerBySecratary from "./control/editCustomerBySecratary";
-// import AttendanceMark from "./control/attendanceMark";
 import TransactionReport from "./control/transactionReport";
 import Constitution from "./client/constitutionPage";
-
-import ProductOverview from "./client/productOverview";
-import CartPage from "./client/cart";
-import CheckOutPage from "./client/checkOut";
 import Contact from "./client/contact";
 import NotFoundPage from "./notFoundPage";
 
@@ -99,25 +84,13 @@ export default function ControlPage() {
         <Route path="exco-members" element={<ExCoMembers />} />
         <Route path="add-member-secretary" element={<AddNewMembers />} />
         <Route path="edit-member-secretary" element={<EditMembers />} />
-        {/* <Route path="membership-fee" element={<MembershipPage />} /> */}
-        {/* <Route path="receipts-shares" element={<ReceiptSharesPage />} /> */}
-        {/* <Route path="receipts-membership" element={<ReceiptMembershipPage />} /> */}
         <Route path="cash-book" element={<CashBook />} />
-        {/* <Route path="ledger-membership" element={<MemberLedger />} /> */}
-        {/* <Route path="ledger-shares" element={<SharesLedgerPage />} /> */}
         <Route path="receipts-entry" element={<ReceiptsEntry />} />
         <Route path="vouchers-entry" element={<VouchersEntry />} />
         <Route path="fund-transfer" element={<FundTransferPage />} />
-        {/* <Route path="expense" element={<ExpensePage />} /> */}
-        {/* <Route path="expense-others" element={<OtherExpensePage />} /> */}
-        {/* <Route path="income" element={<IncomePage />} /> */}
-        {/* <Route path="attendance-mark" element={<AttendanceMark />} /> */}
         <Route path="transactions-report" element={<TransactionReport />} />
         <Route path="constitution" element={<Constitution />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="overview/:Id" element={<ProductOverview />} />
-        <Route path="cart" element={<CartPage />} />
-        <Route path="checkout" element={<CheckOutPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

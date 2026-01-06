@@ -95,9 +95,10 @@ export default function Gallery() {
           </div>
         </div> 
       )}
-        <p className="text-sm text-gray-600 text-center">
-          © 2025 nSoft Technologies. All rights reserved.
-        </p>
+      <footer className="w-full bg-gray-900 text-white py-8 px-4 text-center text-sm">
+        <p>© 2025 Tholangamuwa Central College Past Students Colombo Group</p>
+        <p className="opacity-75">Powered by nSoft Technologies</p>
+      </footer>
     </Fragment>   
   );
 }

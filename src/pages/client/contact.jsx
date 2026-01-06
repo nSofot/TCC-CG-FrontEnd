@@ -151,12 +151,9 @@ export default function ContactUs() {
       </section>
 
       {/* ---------- FOOTER ---------- */}
-      <footer className="bg-gray-900 text-white w-full py-8 px-4 text-center">
-        <p>
-          © 2025 Tholangamuwa Central College Past Students Colombo Group. All
-          rights reserved.
-        </p>
-        <p>Powered by nSoft Technologies.</p>
+      <footer className="w-full bg-gray-900 text-white py-8 px-4 text-center text-sm">
+        <p>© 2025 Tholangamuwa Central College Past Students Colombo Group</p>
+        <p className="opacity-75">Powered by nSoft Technologies</p>
       </footer>
     </Fragment>
   );

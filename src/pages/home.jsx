@@ -6,7 +6,6 @@ import About from "./client/about";
 import Contact from "./client/contact";
 import Home from "./client/homePage";
 import MemberProfilePage from "./client/memberProfile";
-import MemberLedger from "./control/memberLedger";
 import NotFoundPage from "./notFoundPage";
 // import MainLayout from "../layout/MainLayout";
 
@@ -32,7 +31,6 @@ export default function HomePage() {
           <Route path="contact" element={<Contact />} />
           <Route path="constitution" element={<ConstitutionPage />} />
           <Route path="member-profile" element={<MemberProfilePage />} />
-          <Route path="ledger-membership" element={<MemberLedger />} />
           
           <Route path="*" element={<NotFoundPage />} />
         </Route>      
