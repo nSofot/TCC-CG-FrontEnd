@@ -51,13 +51,27 @@ export default function MembersPage() {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-3 flex flex-col gap-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-orange-600">
-          🧑‍🤝‍🧑 Members List
-        </h1>
-        <p className="text-gray-600 text-sm">View all registered members</p>
-      </div>
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
+        <div className="flex md:flex-row justify-between flex-col gap-2 px-4 py-3">
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-orange-600">
+              🧑‍🤝‍🧑 Members List
+            </h1>
+            <p className="text-gray-600 text-sm">View all registered members</p>
+          </div>
+
+          {/* Back Button */}
+          <div className="pt-2">
+            <button
+              onClick={() => navigate("/control")}
+              className="w-full md:w-auto px-6 h-12 rounded-lg border border-gray-700 text-gray-700 font-semibold hover:bg-gray-200 transition"
+            >
+              ← Go Back
+            </button>
+          </div>
+        </div>
+      </div>  
 
       {/* Members List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
