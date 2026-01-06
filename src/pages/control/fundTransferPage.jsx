@@ -349,10 +349,10 @@ export default function FundTransferPage() {
                 <button
                     disabled={isSubmitting}
                     onClick={() => navigate('/control')}
-                    className="w-full h-12 text-gray-600 border border-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition mb-4"
+                    className="w-full h-12 text-orange-400 font-semibold border border-orange-400 hover:bg-orange-400 hover:text-white rounded-lg transition mb-4"
                 >
-                    Go Back
-                </button>          
+                    ← Go Back
+                </button>                         
             </div>
         </div>
     );

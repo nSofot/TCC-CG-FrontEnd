@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 import Header from "../components/header";
 import ControlHomePage from "./control/controlHomePage";
+import DashboardPage from "./control/dashboardPage";
 import MembersPage from "./control/membersPage";
 import ExCoMembers from "./control/exCoMembers";
 import AddNewMembers from "./control/addCustomerBySecratary";
@@ -78,8 +79,12 @@ export default function ControlPage() {
 
   return (
     <Routes>
-      <Route path="*" element={<Layout />}>
-        <Route index element={<ControlHomePage />} />
+      <Route element={<ControlHomePage />}>
+        {/* DEFAULT PAGE */}
+        <Route index element={<DashboardPage />} />
+
+        {/* OTHER PAGES */}
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="members" element={<MembersPage />} />
         <Route path="exco-members" element={<ExCoMembers />} />
         <Route path="add-member-secretary" element={<AddNewMembers />} />
@@ -95,4 +100,5 @@ export default function ControlPage() {
       </Route>
     </Routes>
   );
+
 }
