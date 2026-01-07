@@ -3,6 +3,7 @@ import axios from "axios";
 import LoadingSpinner from "../../components/loadingSpinner";
 import { FaUsersCog, FaUserClock, FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
+import { m } from "framer-motion";
 
 /* ───────── DASHBOARD PAGE ───────── */
 
@@ -14,6 +15,7 @@ export default function DashboardPage() {
   const [associateMembers, setAssociateMembers] = useState([]);
   const [honoraryMembers, setHonoraryMembers] = useState([]);
   const [overseasMembers, setOverseasMembers] = useState([]);
+  const [guestMembers, setGuestMembers] = useState([]);
 
   const [cashInHand, setCashInHand] = useState(0);
   const [savingAccounts, setSavingAccounts] = useState(0);
@@ -47,6 +49,7 @@ export default function DashboardPage() {
         setAssociateMembers(list.filter((m) => m.memberType === "associate"));
         setHonoraryMembers(list.filter((m) => m.memberType === "honorary"));
         setOverseasMembers(list.filter((m) => m.memberType === "overseas"));
+        setGuestMembers(list.filter((m) => m.memberRole === "guest"));
 
         const financeRes = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/ledger-account`
@@ -137,9 +140,67 @@ export default function DashboardPage() {
           icon={<FaUserClock />}
           className="xl:col-span-2"
         >
-          <Empty text="No pending applications" />
-        </DashboardCard>
+          {guestMembers && guestMembers.length > 0 ? (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-orange-200 table-fixed">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="w-5 px-3 py-2 text-left">#</th>
+                      <th className="w-10 px-3 py-2 text-center">ID</th>
+                      <th className="w-50 px-3 py-2 text-left">Name</th>
+                      <th className="w-10 px-3 py-2 text-left">Mobile</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-orange-200">
+                    {guestMembers.map((item, index) => (
+                      <tr
+                        key={item.memberId}
+                        onClick={() => {
+                          setActiveRecord(item);
+                          setIsModalOpen(true);
+                        }}
+                        className="hover:bg-orange-50 cursor-pointer"
+                      >
+                        <td className="px-3 py-2">{index + 1}</td>
+                        <td className="px-3 py-2 text-center">{item.memberId}</td>
+                        <td className="px-3 py-2 break-words">
+                          {item.title} {item.firstName} {item.lastName}
+                        </td>
+                        <td className="px-3 py-2">{item.mobile}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
+              {/* Mobile cards */}
+              <div className="md:hidden flex flex-col gap-3 p-3">
+                {guestMembers.map((item) => (
+                  <div
+                    key={item.memberId}
+                    onClick={() => {
+                      setActiveRecord(item);
+                      setIsModalOpen(true);
+                    }}
+                    className="flex items-center gap-3 p-3 border border-orange-200 rounded-lg shadow-sm hover:bg-orange-50 cursor-pointer"
+                  >
+                    <div className="flex-1">
+                      <p className="font-semibold">
+                        {item.title} {item.firstName} {item.lastName}
+                      </p>
+                      <p className="text-sm text-gray-600">{item.memberId}</p>
+                      <p className="text-sm text-gray-600">{item.mobile}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <Empty text="No pending applications" />
+          )}
+        </DashboardCard>
       </div>
     </div>
   );

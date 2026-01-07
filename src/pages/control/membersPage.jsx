@@ -26,23 +26,29 @@ export default function MembersPage() {
 
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    setIsLoading(true);
+      window.scrollTo(0, 0);
+      setIsLoading(true);
 
-    axios
-      .get(import.meta.env.VITE_BACKEND_URL + "/api/member")
-      .then((res) => {
-        const sorted = res.data.sort((a, b) =>
-          a.memberId.localeCompare(b.memberId)
-        );
-        setCustomers(sorted);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching members:", err);
-        setIsLoading(false);
-      });
+      axios
+        .get(import.meta.env.VITE_BACKEND_URL + "/api/member")
+        .then((res) => {
+          // Filter out members with memberRole "guest"
+          const filtered = res.data.filter(member => member.memberRole !== "guest");
+
+          // Sort remaining members by memberId
+          const sorted = filtered.sort((a, b) =>
+            a.memberId.localeCompare(b.memberId)
+          );
+
+          setCustomers(sorted);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching members:", err);
+          setIsLoading(false);
+        });
   }, [location]);
+
 
   const getImageUrl = (img) =>
     img?.startsWith("http")

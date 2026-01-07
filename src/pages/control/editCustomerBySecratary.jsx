@@ -220,13 +220,6 @@ export default function EditMember() {
 			const uploadPromises = image.map((img) => mediaUpload(img));
 			uploadedNewImages = await Promise.all(uploadPromises);
 			}
-
-			// Add default image ONLY if no existing images and no new images
-			// if (existingImages.length === 0 && uploadedNewImages.length === 0) {
-			// uploadedNewImages = ["/userDefault.jpg"];
-			// }
-
-
 			const updatedMember = {
 				memberId,
 				title,
@@ -572,20 +565,20 @@ export default function EditMember() {
 									</div>
 								))}
 							</div>
-						<div className="mt-4">
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Add New Images (optional)
-							</label>
-							<input
-								type="file"
-								multiple
-								onChange={(e) => {
-									const files = Array.from(e.target.files);
-									setImage((prev) => [...prev, ...files]);
-								}}
-								className="w-full text-sm text-blue-600 cursor-pointer"
-							/>
-						</div>							
+							<div className="mt-4">
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Add New Images (optional)
+								</label>
+								<input
+									type="file"
+									multiple
+									onChange={(e) => {
+										const files = Array.from(e.target.files);
+										setImage((prev) => [...prev, ...files]);
+									}}
+									className="w-full text-sm text-blue-600 cursor-pointer"
+								/>
+							</div>							
 						</div>
 					</div>
 				</div>

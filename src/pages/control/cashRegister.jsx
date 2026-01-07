@@ -139,12 +139,12 @@ export default function CashRegisterPage() {
 
       {/* Back Button */}
       <div className="pt-2">
-        <button
-          onClick={() => navigate('/control')}
-          className="w-full md:w-auto px-6 h-12 rounded-lg border border-gray-700 text-gray-700 font-semibold hover:bg-gray-200 transition"
-        >
-          ← Go Back
-        </button>
+            <button
+              onClick={() => navigate("/control")}
+              className="w-full md:w-auto px-6 h-12 rounded-lg border border-orange-400 text-orange-400 font-semibold hover:bg-orange-400 hover:text-white transition"
+            >
+              ← Go Back
+            </button>
       </div>
     </div>
   );

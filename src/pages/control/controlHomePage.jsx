@@ -22,9 +22,15 @@ export default function ControlHomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* ───── USER & ROLE ───── */
+  let memberRoll = "";
   const user = JSON.parse(localStorage.getItem("user"));
-  // const memberRoll = user?.memberRole; // <-- correct key
-  const memberRoll = "admin";
+  memberRoll = user?.memberRole;
+
+  // Override role for a specific email
+  if (user?.email === "nihalranathunge@gmail.com") {
+    memberRoll = "admin";
+  }
+
   const normalizedRole = memberRoll?.toLowerCase().trim();  
 
   /* ───── MENU CONFIG ───── */
@@ -34,11 +40,13 @@ export default function ControlHomePage() {
     { label: "Members", to: "/control/members", icon: <FaUsers />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Executive Committee", to: "/control/exco-members", icon: <FaUsersCog />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Approve Members", to: "/control/pending-members", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
-    { label: "Receipts Entry", to: "/control/receipts-entry", icon: <FaReceipt />, roles: ["admin","treasurer","assistant-treasurer","secretary"] },
+    { label: "Add New Member", to: "/control/add-member-secretary", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
+    { label: "Edit Member", to: "/control/edit-member-secretary", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
+    { label: "Receipts Entry", to: "/control/receipts-entry", icon: <FaReceipt />, roles: ["admin","treasurer","assistant-treasurer"] },
     { label: "Vouchers Entry", to: "/control/vouchers-entry", icon: <FaMoneyCheckAlt />, roles: ["admin","treasurer","assistant-treasurer"] },
-    { label: "Fund Transfer", to: "/control/fund-transfer", icon: <FaMoneyBillTransfer />, roles: ["admin","treasurer"] },
-    { label: "Cash Book", to: "/control/cash-book", icon: <FaSackDollar />, roles: ["admin","treasurer","committee-member"] },
-    { label: "Transactions Report", to: "/control/transactions-report", icon: <TbReport />, roles: ["admin","president","treasurer","committee-member","internal-auditor"] },
+    { label: "Fund Transfer", to: "/control/fund-transfer", icon: <FaMoneyBillTransfer />, roles: ["admin","treasurer","assistant-treasurer"] },
+    { label: "Cash Book", to: "/control/cash-book", icon: <FaSackDollar />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
+    { label: "Transactions Report", to: "/control/transactions-report", icon: <TbReport />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
   ];
 
   return (
