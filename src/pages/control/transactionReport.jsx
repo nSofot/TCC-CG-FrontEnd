@@ -123,9 +123,9 @@ export default function Reports() {
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-gray-100 rounded-md px-4 md:px-12 py-4">
+        <div className="w-full min-h-screen flex flex-col bg-gray-100 rounded-md p-1">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-1">
                 <div className="flex flex-col">
                     <h1 className="text-lg md:text-xl font-semibold text-gray-800">
                         📥📗 Transaction Reports
@@ -134,17 +134,11 @@ export default function Reports() {
                         Generate and download all transaction reports from here.
                     </p>
                 </div>
-                {/* <button
-                    onClick={exportToExcel}
-                    className="bg-yellow-600 text-white px-3 py-2 text-sm md:text-base rounded hover:bg-yellow-700 transition"
-                >
-                    Export Excel
-                </button> */}
             </div>
 
             {/* Filters */}
-            <div className="bg-white shadow rounded-md flex flex-col md:flex-row md:justify-between w-full p-4 space-x-4 gap-4 md:items-end">
-                <div className="flex flex-col w-full md:w-1/8">
+            <div className="bg-white shadow rounded-md flex flex-col md:flex-row md:justify-between w-full p-4 space-x-4 gap-1 md:items-end">
+                <div className="flex flex-col w-full md:w-1/7">
                     <label className="text-sm font-medium mb-1">Date from:</label>
                     <input
                         type="date"
@@ -154,7 +148,7 @@ export default function Reports() {
                     />
                 </div>
 
-                <div className="flex flex-col w-full md:w-1/8">
+                <div className="flex flex-col w-full md:w-1/7">
                     <label className="text-sm font-medium mb-1">Date to:</label>
                     <input
                         type="date"
@@ -164,7 +158,7 @@ export default function Reports() {
                     />
                 </div>
 
-                <div className="flex flex-col w-full md:w-1/6">
+                <div className="flex flex-col w-full md:w-1/5">
                     <label className="text-sm font-medium mb-1">Transaction type:</label>
                     <select
                         value={transactionType}
@@ -182,37 +176,35 @@ export default function Reports() {
                     <button
                         disabled={isGenerating}
                         onClick={GenerateReport}
-                        className={`w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ${
+                        className={`w-full md:w-auto px-4 h-14 rounded-lg text-sm text-white font-semibold bg-purple-600 hover:bg-purple-800 transition ${
                             isGenerating ? "opacity-50 cursor-not-allowed" : ""
                         }`}
                     >
-                        {isGenerating ? "Generating..." : "Generate"}
+                        {isGenerating ? "Generating ..." : "Generate Report"}
                     </button>
 
                     {transactions.length > 0 && (
                     <>
                         <button
                         onClick={printReport}
-                        className="w-full md:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                        className="w-full md:w-auto px-4 h-14 rounded-lg text-sm text-white font-semibold bg-blue-600 hover:bg-blue-800 transition"
                         >
                         Print Report
                         </button>
 
                         <button
                         onClick={exportToExcel}
-                        className="bg-yellow-600 text-white px-3 py-2 text-sm md:text-base rounded hover:bg-yellow-700 transition"
+                        className="w-full md:w-auto px-4 h-14 rounded-lg text-sm text-white font-semibold bg-green-600 md:text-base rounded hover:bg-green-800 transition"
                         >
                         Export Excel
                         </button>
                     </>
                     )}
-
-
                     <button
-                        onClick={() => navigate("/control")}
-                        className="w-full md:w-auto bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                    onClick={() => navigate("/control")}
+                    className="w-full md:w-auto px-4 h-14 rounded-lg border border-orange-400 text-orange-400 font-semibold hover:bg-orange-400 hover:text-white transition"
                     >
-                        Go Back
+                    ← Go Back
                     </button>
                 </div>
 

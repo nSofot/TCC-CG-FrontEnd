@@ -318,10 +318,10 @@ export default function VoucherEntryPage() {
         </button>
 
         <button
-          onClick={()=>navigate("/control")}
-          className="w-full md:w-auto px-10 h-12 rounded-lg border font-semibold border-gray-700 hover:bg-gray-200 transition"
+          onClick={() => navigate("/control")}
+          className="w-full md:w-auto px-6 h-12 rounded-lg border border-orange-400 text-orange-400 font-semibold hover:bg-orange-400 hover:text-white transition"
         >
-          Back
+          ← Go Back
         </button>
       </div>
     </div>

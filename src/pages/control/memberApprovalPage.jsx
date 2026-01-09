@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import mediaUpload from "../../utils/mediaUpload";
 
-export default function EditMember() {
+export default function MemberApproval() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isUpdating, setIsUpdating] = useState(false);
 	const [expanded, setExpanded] = useState("basic"); 
+	const location = useLocation();
 
 	// Example states (replace with your actual ones)
 	const [member, setMember] = useState({});
@@ -38,49 +39,16 @@ export default function EditMember() {
     // if (!user) navigate("/control");
     // if (user.memberRole !== 'secretary') navigate("/control");
 
-    const searchCustomer = async (id) => {
-        if (!id || id === "0") return;
-
-        setIsLoading(true);
-        try {         
-            // Fetch applicant details
-            const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/api/member/${id}`
-            );
-            if (res.data) {
-                setMember(res.data);
-				setMemberId(res.data.memberId || "");
-				setTitle(res.data.title || "");
-				setFirstName(res.data.firstName || "");
-				setLastName(res.data.lastName || "");
-				setMemberType(res.data.memberType || "");
-				setMemberRole(res.data.memberRole || "");
-				setAddress(Array.isArray(res.data.address) ? res.data.address.join(", ") : res.data.address || "");
-				setNotes(res.data.notes || "");
-				setMobile(res.data.mobile || "");
-				setPhone(res.data.phone || "");
-				setEmail(res.data.email || "");
-				setPeriodInSchoolFrom(res.data.periodInSchoolFrom || "");
-				setPeriodInSchoolTo(res.data.periodInSchoolTo || "");
-				setInvitedBy(res.data.invitedBy || "");
-				setExistingImages(res.data.image || "");
-            }           
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Invalid Member ID");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
 	useEffect(() => {
-	if (location.state) {
-		const data = location.state;
+	if (location.state) {		
+		const data = location.state;		
 		setMemberId(data.memberId || "");
 		setTitle(data.title || "");
 		setFirstName(data.firstName || "");
 		setLastName(data.lastName || "");
-		setMemberType(data.memberType || "");
-		setMemberRole(data.memberRole || "");
+		setMemberType("ordinary");
+		setMemberRole("member");
 		setAddress(Array.isArray(data.address) ? data.address.join(", ") : data.address || "");
 		setNotes(data.notes || "");
 		setMobile(data.mobile || "");
@@ -220,81 +188,91 @@ export default function EditMember() {
 			const uploadPromises = image.map((img) => mediaUpload(img));
 			uploadedNewImages = await Promise.all(uploadPromises);
 			}
-			const updatedMember = {
-				memberId,
+
+			const guestId = memberId;
+			const newMember = {
+				memberId: memberId || undefined,
 				title,
 				firstName,
 				lastName,
 				memberType,
 				memberRole,
-				address: address
-					? address.split(",").map(n => n.trim()).filter(Boolean)  // remove empty strings
-					: undefined,
-				periodInSchoolFrom,
-				periodInSchoolTo,	
-				invitedBy,				
+				address: address ? address.split(",").map(n => n.trim()).filter(Boolean) : undefined,
 				notes: notes || undefined,
-				image: [...existingImages, ...uploadedNewImages].length > 0
-					? [...existingImages, ...uploadedNewImages]
-					: [],
-				mobile: mobile || undefined,
+				image: existingImages.length > 0 ? existingImages : undefined,
+				mobile,
 				phone: phone || undefined,
-				email: email?.trim() || undefined,
+				periodInSchoolFrom,
+				periodInSchoolTo,
+				invitedBy: invitedBy || undefined,
+				password: mobile
 			};
 
-			await axios.put(
-				`${import.meta.env.VITE_BACKEND_URL}/api/member/${memberId}`,
-				updatedMember,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
-				}
-			);
+			if (email?.trim()) newMember.email = email.trim();
 
-			toast.success("Member updated successfully");
+			//delete guest record
+			try {
+				await axios.delete(
+					import.meta.env.VITE_BACKEND_URL + `/api/member/${guestId}`,
+					{
+					headers: {
+						Authorization: `Bearer ${user.token}`,
+					},
+					}
+				);
+
+			} catch (error) {
+				console.error("Error deleting member:", error);
+				toast.error(error.response?.data?.message || "Delete failed");
+			}			
+
+			//write new member record
+			await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/member`, newMember, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		
+			toast.success("Member approved successfully");
 			navigate(-1);
 		} catch (error) {
 			console.error(error);
-			toast.error(error?.response?.data?.message || "Update failed");
+			toast.error(error?.response?.data?.message || "Approval failed");
 		} finally {
 			setIsUpdating(false);
 		}
-	}
+	};
 
 	return (
 		<div className="w-full min-h-screen flex flex-col p-4 bg-gray-50">
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
 				<div>
-					<h1 className="text-xl font-semibold text-gray-800">✏️ Edit Member</h1>
-					<p className="text-sm text-gray-500">Edit and Update existing member information</p>
+					<h1 className="text-xl font-semibold text-gray-800">✏️ Approve Member Application</h1>
+					<p className="text-sm text-gray-500">Edit, Verify and Approve existing member application</p>
 				</div>
 
 				<div className="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
 					<button
-					onClick={async () => {
-						setIsUpdating(true);
-						await updateProduct();
-						setIsUpdating(false);
-					}}
-					disabled={isUpdating}
-					className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium shadow-md transition text-white ${
-						isUpdating
-						? "bg-gray-500 cursor-not-allowed"
-						: "bg-blue-600 hover:bg-blue-700"
-					}`}
-					>
-					{isUpdating ? "Updating..." : "Update Member"}
+						onClick={async () => {
+							setIsUpdating(true);
+							await updateProduct();
+							setIsUpdating(false);
+						}}
+						disabled={isUpdating}
+						className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium shadow-md transition text-white ${
+							isUpdating
+							? "bg-gray-400 cursor-not-allowed"
+							: "bg-blue-600 hover:bg-blue-800"
+						}`}
+						>
+						{isUpdating ? "Updating..." : "Approve & Update"}
 					</button>
 
-					<Link
-					to="/control"
-					className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-medium shadow text-center"
-					>
-					Cancel
-					</Link>
+					<button
+						onClick={() => navigate("/control")}
+						className="w-full md:w-auto px-6 h-12 rounded-lg border border-orange-400 text-orange-400 font-semibold hover:bg-orange-400 hover:text-white transition"
+						>
+						← Go Back
+					</button>
 				</div>
 			</div>
 
@@ -457,6 +435,7 @@ export default function EditMember() {
 									Invitee
 								</label>
 								<input
+									disabled
 									type="text"
 									value={invitedBy}
 									onChange={(e) => setInvitedBy(e.target.value)}
@@ -494,7 +473,7 @@ export default function EditMember() {
 									className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 								>
 									<option value="member">Member</option>
-									<option value="president">President</option>
+									{/* <option value="president">President</option>
 									<option value="secretary">Secretary</option>
 									<option value="treasurer">Treasurer</option>
 									<option value="vice-president">Vice President</option>
@@ -502,7 +481,7 @@ export default function EditMember() {
 									<option value="assistant-treasurer">Assistant Treasurer</option>
 									<option value="activity-coordinator">Activity Coordinator</option>
 									<option value="committee-member">Committee Member</option>
-									<option value="internal-auditor">Internal Auditor</option>
+									<option value="internal-auditor">Internal Auditor</option> */}
 								</select>
 							</div>
 						</div>	

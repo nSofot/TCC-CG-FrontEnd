@@ -3,80 +3,86 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useNavigate, useLocation } from "react-router-dom";
 import LoadingSpinner from "../../components/loadingSpinner";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaEdit, FaTrash } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 Modal.setAppElement("#root");
 
-export default function ExCoMembers() {
-  const [customers, setCustomers] = useState([]);
+export default function PendingMembersPage() {
+  const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeRecord, setActiveRecord] = useState(null);
-  const [excoMembers, setExcoMembers] = useState([]);
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const roleMap = {
-    "president": "President",
-    "secretary": "Secretary",
-    "treasurer": "Treasurer",
-    "vice-president": "Vice President",
-    "assistant-secretary": "Assistant Secretary",
-    "assistant-treasurer": "Assistant Treasurer",
-    "activity-coordinator": "Activity Coordinator",
-    "internal-auditor": "Internal Auditor",
-    "committee-member": "Committee Member"
-  };  
+  const typeMap = {
+    "ordinary": "Ordinary Member",
+    "life": "Life Member",
+    "associate": "Associate Member",
+    "honorary": "Honorary Member",
+    "overseas": "Overseas Member"
+  };
+
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/member`
-        );
+      window.scrollTo(0, 0);
+      setIsLoading(true);
 
-        const list = res.data;
-        // setMembers(list);
+      axios
+        .get(import.meta.env.VITE_BACKEND_URL + "/api/member")
+        .then((res) => {
+          // Filter out members with memberRole "guest"
+          const filtered = res.data.filter(member => member.memberRole === "guest");
 
-        const executiveRoles = [
-          "president",
-          "secretary",
-          "treasurer",
-          "vice-president",
-          "assistant-secretary",
-          "assistant-treasurer",
-          "activity-coordinator",
-          "internal-auditor",
-          "committee-member"
-        ];
+          // Sort remaining members by memberId
+          const sorted = filtered.sort((a, b) =>
+            a.memberId.localeCompare(b.memberId)
+          );
 
-        setExcoMembers(
-          list
-            .filter((m) =>
-              executiveRoles.includes(m.memberRole?.toLowerCase())
-            )
-            .sort(
-              (a, b) =>
-                executiveRoles.indexOf(a.memberRole?.toLowerCase()) -
-                executiveRoles.indexOf(b.memberRole?.toLowerCase())
-            )
-        );
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+          setMembers(sorted);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching members:", err);
+          setIsLoading(false);
+        });
+  }, [location]);
 
-    fetchMembers();
-  }, []);
 
   const getImageUrl = (img) =>
     img?.startsWith("http")
       ? img
       : import.meta.env.VITE_BACKEND_URL + img;
+
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this member?\nThis action cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(
+        import.meta.env.VITE_BACKEND_URL + `/api/member/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      setMembers(prev => prev.filter(m => m.memberId !== id));
+      toast.success("Member deleted");
+    } catch (error) {
+      console.error("Error deleting member:", error);
+      toast.error(error.response?.data?.message || "Delete failed");
+    }
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-3 flex flex-col gap-6">
@@ -85,9 +91,9 @@ export default function ExCoMembers() {
           {/* Header */}
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-orange-600">
-              🧑‍🤝‍🧑 Executive Commitee 
+              🧑‍🤝‍🧑 Pending Member Approvals
             </h1>
-            <p className="text-gray-600 text-sm">Executive Committee members</p>
+            <p className="text-gray-600 text-sm">Review and approve new member registrations awaiting verification</p>
           </div>
 
           {/* Back Button */}
@@ -100,7 +106,7 @@ export default function ExCoMembers() {
             </button>
           </div>
         </div>
-      </div> 
+      </div>  
 
       {/* Members List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -119,13 +125,13 @@ export default function ExCoMembers() {
                     <th className="w-16 px-3 py-2 text-center">Image</th>
                     <th className="w-10 px-3 py-2 text-center">ID</th>
                     <th className="w-50 px-3 py-2 text-left">Name</th>
-                    <th className="w-40 px-3 py-2 text-left">Designation</th>
-                    <th className="w-80 px-3 py-2 text-left">Address</th>
+                    <th className="w-70 px-3 py-2 text-left">Address</th>
                     <th className="w-10 px-3 py-2 text-left">Mobile</th>
+                    <th className="w-10 px-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-orange-200">
-                  {excoMembers.map((item, index) => (
+                  {members.map((item, index) => (
                     <tr
                       key={item.memberId}
                       onClick={() => {
@@ -151,17 +157,54 @@ export default function ExCoMembers() {
                       <td className="px-3 py-2 text-center">{item.memberId}</td>
                       <td className="px-3 py-2 text-left break-words">
                         {item.title} {item.firstName} {item.lastName}
-                      </td>
-                      {/* <td className="px-3 py-2 text-left">{item.memberRole}</td> */}
-                    <td className="px-3 py-2 text-left">
-                        {roleMap[item.memberRole?.toLowerCase()]}
-                    </td>                      
+                      </td>                      
                       <td className="px-3 py-2 text-left break-words">
                         {Array.isArray(item.address)
                           ? item.address.filter(Boolean).join(", ")
                           : item.address || "-"}
                       </td>
                       <td className="px-3 py-2 text-left">{item.mobile}</td>
+                        <td className="px-3 py-2">
+                            <div className="flex gap-3 justify-center">
+                                <button
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent triggering row click
+                                    navigate("/control/member-approval", {
+                                    state: {
+                                        memberId: item.memberId,
+                                        title: item.title,
+                                        firstName: item.firstName,
+                                        lastName: item.lastName,
+                                        address: item.address,
+                                        mobile: item.mobile,
+                                        phone: item.phone,
+                                        email: item.email,
+                                        periodInSchoolFrom: item.periodInSchoolFrom,
+                                        periodInSchoolTo: item.periodInSchoolTo,
+                                        invitedBy: item.invitedBy,
+                                        notes: item.notes,
+                                        image: item.image,
+                                        memberType: item.memberType,
+                                        memberRole: item.memberRole,
+                                        
+                                    },
+                                    });
+                                }}
+                                className="px-3 py-2 text-blue-600 hover:text-blue-800"
+                                >
+                                <FaEdit className="text-xl" />
+                                </button>
+                                <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(item.memberId);
+                                }}
+                                className="px-3 py-2 text-red-600 hover:text-red-800"
+                                >
+                                <FaTrash className="text-xl" />
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                   ))}
                 </tbody>
@@ -170,7 +213,7 @@ export default function ExCoMembers() {
 
             {/* Mobile Cards */}
             <div className="md:hidden flex flex-col gap-3 p-3">
-              {excoMembers.map((item) => (
+              {members.map((item) => (
                 <div
                   key={item.memberId}
                   onClick={() => {
@@ -194,12 +237,13 @@ export default function ExCoMembers() {
                   )}
 
                   <div className="flex-1">
-                    <p className="text-lg font-semibold">
+                    <p className="font-semibold">
                       {item.title} {item.firstName} {item.lastName}
                     </p>
-                    <p className="text-lg">
-                        {roleMap[item.memberRole?.toLowerCase()]}
-                    </p>                       
+                    <p className="text-sm text-gray-600">
+                          {typeMap[item.memberType?.toLowerCase()]}
+                    </p>                    
+                    <p className="text-sm text-gray-600">{item.memberId}</p>
                     <p className="text-sm text-gray-600">{item.mobile}</p>
                   </div>
                 </div>
