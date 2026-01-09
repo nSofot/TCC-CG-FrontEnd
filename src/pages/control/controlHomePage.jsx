@@ -39,7 +39,7 @@ export default function ControlHomePage() {
     { label: "Dashboard", to: "/control", icon: <FaAtom />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Members", to: "/control/members", icon: <FaUsers />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Executive Committee", to: "/control/exco-members", icon: <FaUsersCog />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
-    { label: "Approve Members", to: "/control/pending-members", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
+    { label: "Pending Member Approvals", to: "/control/pending-members", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
     { label: "Add New Member", to: "/control/add-member-secretary", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
     { label: "Edit Member", to: "/control/edit-member-secretary", icon: <FaUserClock />, roles: ["admin","secretary","assistant-secretary"] },
     { label: "Receipts Entry", to: "/control/receipts-entry", icon: <FaReceipt />, roles: ["admin","treasurer","assistant-treasurer"] },
