@@ -84,25 +84,32 @@ export default function RegisterPage() {
     }
   };
 
-  const googleLogin = useGoogleLogin({
+  const googleRegister = useGoogleLogin({
     onSuccess: async (response) => {
-      if (!inputMobile || !inviteeMobile) {
-        toast.error("Please provide invitee ID and invitee mobile before Google registration");
-        return;
-      }
-      try {
-        const accessToken = response.access_token;
-        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/create-google`, {
-          accessToken,
-          invitedBy: inviteeId,
-          mobile,
+        if (!inputMobile || !inviteeMobile || !mobile) {
+          toast.error("Please provide invitee ID and invitee mobile before Google registration");
+          return;
+        }
+        if (inputMobile !== inviteeMobile) {
+          toast.error("Invitee mobile numbers do not match");
+          return;
+        }      
+
+        try {
+          setIsRegistering(true);
+          const accessToken = response.access_token;
+          const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/create-google-user`, {
+            accessToken,
+            invitedBy: inviteeId,
+            mobile,
         });
-        toast.success("Google Registration Successful");
-        localStorage.setItem("token", res.data.token);
-        navigate("/member-profile");
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Google registration failed");
-      }
+          toast.success("Google Registration Successful");
+          localStorage.setItem("token", res.data.token);
+          navigate("/member-profile");
+        } catch (err) {
+          setIsRegistering(false);
+          toast.error(err.response?.data?.message || "Google registration failed");
+        }
     },
     onError: () => toast.error("Google registration failed"),
   });
@@ -215,7 +222,8 @@ export default function RegisterPage() {
             {isRegistering ? "Registering..." : "Register"}
           </button>
           <button
-            onClick={googleLogin}
+            onClick={googleRegister}
+            disabled={isRegistering}
             className="flex-1 h-10 flex items-center justify-center gap-2 text-purple-600 border border-purple-600 rounded-md hover:bg-purple-700 hover:text-white"
           >
             <FcGoogle className="text-2xl" />
