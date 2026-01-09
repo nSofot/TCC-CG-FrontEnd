@@ -410,9 +410,9 @@ export default function ReceiptEntryPage() {
 
         <button
           onClick={() => navigate("/control")}
-          className="w-full md:w-auto md:px-10 h-12 border border-gray-700 rounded-lg font-semibold hover:bg-gray-200"
+          className="w-full md:w-auto px-6 h-12 rounded-lg border border-orange-400 text-orange-400 font-semibold hover:bg-orange-400 hover:text-white transition"
         >
-          Back
+          ← Go Back
         </button>
       </div>
 
