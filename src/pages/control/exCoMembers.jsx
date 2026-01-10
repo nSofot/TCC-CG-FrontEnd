@@ -79,8 +79,8 @@ export default function ExCoMembers() {
       : import.meta.env.VITE_BACKEND_URL + img;
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-3 flex flex-col gap-6">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
+    <div className="w-full max-w-6xl mx-auto min-h-screen p-3 flex flex-col gap-4">
+      <div className="bg-white border-b border-gray-200">
         <div className="flex md:flex-row justify-between flex-col gap-2 px-4 py-3">
           {/* Header */}
           <div>
@@ -103,110 +103,112 @@ export default function ExCoMembers() {
       </div> 
 
       {/* Members List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        {isLoading ? (
-          <div className="flex justify-center py-10">
-            <LoadingSpinner />
-          </div>
-        ) : (
-          <>
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-orange-200 table-fixed">
-                <thead className="bg-orange-100">
-                  <tr>
-                    <th className="w-5 px-3 py-2 text-left">#</th>
-                    <th className="w-16 px-3 py-2 text-center">Image</th>
-                    <th className="w-10 px-3 py-2 text-center">ID</th>
-                    <th className="w-50 px-3 py-2 text-left">Name</th>
-                    <th className="w-40 px-3 py-2 text-left">Designation</th>
-                    <th className="w-80 px-3 py-2 text-left">Address</th>
-                    <th className="w-10 px-3 py-2 text-left">Mobile</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-orange-200">
-                  {excoMembers.map((item, index) => (
-                    <tr
-                      key={item.memberId}
-                      onClick={() => {
-                        setActiveRecord(item);
-                        setIsModalOpen(true);
-                      }}
-                      className="hover:bg-orange-50 cursor-pointer"
-                    >
-                      <td className="px-3 py-2 text-left">{index + 1}</td>
-                      <td className="px-3 py-2 text-center">
-                        {Array.isArray(item.image) && item.image.length > 0 ? (
-                          <img
-                            src={getImageUrl(item.image[0])}
-                            className="w-15 h-15 rounded-full object-cover mx-auto"
-                          />
-                        ) : (
-                          <img
-                            src="/userDefault.jpg"
-                            className="w-15 h-15 rounded-full object-cover mx-auto"
-                          />
-                        )}
-                      </td>
-                      <td className="px-3 py-2 text-center">{item.memberId}</td>
-                      <td className="px-3 py-2 text-left break-words">
-                        {item.title} {item.firstName} {item.lastName}
-                      </td>
-                      {/* <td className="px-3 py-2 text-left">{item.memberRole}</td> */}
-                    <td className="px-3 py-2 text-left">
-                        {roleMap[item.memberRole?.toLowerCase()]}
-                    </td>                      
-                      <td className="px-3 py-2 text-left break-words">
-                        {Array.isArray(item.address)
-                          ? item.address.filter(Boolean).join(", ")
-                          : item.address || "-"}
-                      </td>
-                      <td className="px-3 py-2 text-left">{item.mobile}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <div className="bg-white rounded-lg shadow flex-1 overflow-hidden">
+        <div className="h-full max-h-[65vh] overflow-y-auto">
+          {isLoading ? (
+            <div className="flex justify-center py-10">
+              <LoadingSpinner />
             </div>
+          ) : (
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-orange-200 table-fixed">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="w-5 px-3 py-2 text-left">#</th>
+                      <th className="w-16 px-3 py-2 text-center">Image</th>
+                      <th className="w-10 px-3 py-2 text-center">ID</th>
+                      <th className="w-50 px-3 py-2 text-left">Name</th>
+                      <th className="w-40 px-3 py-2 text-left">Designation</th>
+                      <th className="w-80 px-3 py-2 text-left">Address</th>
+                      <th className="w-10 px-3 py-2 text-left">Mobile</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-orange-200">
+                    {excoMembers.map((item, index) => (
+                      <tr
+                        key={item.memberId}
+                        onClick={() => {
+                          setActiveRecord(item);
+                          setIsModalOpen(true);
+                        }}
+                        className="hover:bg-orange-50 cursor-pointer"
+                      >
+                        <td className="px-3 py-2 text-left">{index + 1}</td>
+                        <td className="px-3 py-2 text-center">
+                          {Array.isArray(item.image) && item.image.length > 0 ? (
+                            <img
+                              src={getImageUrl(item.image[0])}
+                              className="w-15 h-15 rounded-full object-cover mx-auto"
+                            />
+                          ) : (
+                            <img
+                              src="/userDefault.jpg"
+                              className="w-15 h-15 rounded-full object-cover mx-auto"
+                            />
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-center">{item.memberId}</td>
+                        <td className="px-3 py-2 text-left break-words">
+                          {item.title} {item.firstName} {item.lastName}
+                        </td>
+                        {/* <td className="px-3 py-2 text-left">{item.memberRole}</td> */}
+                      <td className="px-3 py-2 text-left">
+                          {roleMap[item.memberRole?.toLowerCase()]}
+                      </td>                      
+                        <td className="px-3 py-2 text-left break-words">
+                          {Array.isArray(item.address)
+                            ? item.address.filter(Boolean).join(", ")
+                            : item.address || "-"}
+                        </td>
+                        <td className="px-3 py-2 text-left">{item.mobile}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Mobile Cards */}
-            <div className="md:hidden flex flex-col gap-3 p-3">
-              {excoMembers.map((item) => (
-                <div
-                  key={item.memberId}
-                  onClick={() => {
-                    setActiveRecord(item);
-                    setIsModalOpen(true);
-                  }}
-                  className="flex items-center gap-3 p-3 border border-orange-200 rounded-lg shadow-sm hover:bg-orange-50 cursor-pointer"
-                >
-                  {Array.isArray(item.image) && item.image.length > 0 ? (
-                    <img
-                      src={getImageUrl(item.image[0])}
-                      className="w-15 h-15 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-15 h-15 rounded-full bg-gray-200 flex items-center justify-center">
+              {/* Mobile Cards */}
+              <div className="md:hidden flex flex-col gap-3 p-3">
+                {excoMembers.map((item) => (
+                  <div
+                    key={item.memberId}
+                    onClick={() => {
+                      setActiveRecord(item);
+                      setIsModalOpen(true);
+                    }}
+                    className="flex items-center gap-3 p-3 border border-orange-200 rounded-lg shadow-sm hover:bg-orange-50 cursor-pointer"
+                  >
+                    {Array.isArray(item.image) && item.image.length > 0 ? (
                       <img
-                        src="/userDefault.jpg"
+                        src={getImageUrl(item.image[0])}
                         className="w-15 h-15 rounded-full object-cover"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="w-15 h-15 rounded-full bg-gray-200 flex items-center justify-center">
+                        <img
+                          src="/userDefault.jpg"
+                          className="w-15 h-15 rounded-full object-cover"
+                        />
+                      </div>
+                    )}
 
-                  <div className="flex-1">
-                    <p className="text-lg font-semibold">
-                      {item.title} {item.firstName} {item.lastName}
-                    </p>
-                    <p className="text-lg">
-                        {roleMap[item.memberRole?.toLowerCase()]}
-                    </p>                       
-                    <p className="text-sm text-gray-600">{item.mobile}</p>
+                    <div className="flex-1">
+                      <p className="text-lg font-semibold">
+                        {item.title} {item.firstName} {item.lastName}
+                      </p>
+                      <p className="text-lg">
+                          {roleMap[item.memberRole?.toLowerCase()]}
+                      </p>                       
+                      <p className="text-sm text-gray-600">{item.mobile}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Modal */}
