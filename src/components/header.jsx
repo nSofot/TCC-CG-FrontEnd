@@ -24,7 +24,7 @@ export default function Header() {
   // const isCommittee = ["admin", "executive", "manager", "chairman", "secretary", "treasurer"].includes(
   //   user?.memberRole
   // );
-  const isCommittee = user && user?.memberRole !== "member";
+  const isCommittee = user && user?.memberRole !== "member" && user?.memberRole !== "guest";
 
   const isAdmin = user?.memberRole === "admin";
   const isPresident = user?.memberRole === "president";
