@@ -126,12 +126,14 @@ export default function LoginPage() {
             Register as new member?
           </Link>          
         </div>
-      <p className="mt-8 text-sm text-gray-600 text-center">
-        © 2025 Tholangamuwa Central College - Colombo Group. All rights reserved.
-      </p>
-      <p className="mt-2 text-sm text-gray-600 text-center">
-        Powered by nSoft Technologies.
-      </p>        
+        <div>
+          <p className="mt-8 text-sm text-gray-600 text-center">
+            © 2025 Tholangamuwa Central College - Colombo Group. All rights reserved.
+          </p>
+          <p className="mt-2 text-sm text-gray-600 text-center">
+            Powered by nSoft Technologies.
+          </p>   
+        </div>
       </div>
     </div>
   );

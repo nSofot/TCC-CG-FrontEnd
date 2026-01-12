@@ -128,7 +128,7 @@ export default function HomePage() {
             transition={{ delay: 0.7 }}
           >
             <Link
-              to="/contact"
+              to="/register"
               className="px-12 py-3 bg-yellow-400 border border-yellow-200 text-white font-semibold rounded-xl shadow hover:bg-yellow-500 transition"
             >
               JOIN US
