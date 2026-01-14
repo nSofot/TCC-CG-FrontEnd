@@ -46,6 +46,7 @@ export default function ControlHomePage() {
     { label: "Vouchers Entry", to: "/control/vouchers-entry", icon: <FaMoneyCheckAlt />, roles: ["admin","treasurer","assistant-treasurer"] },
     { label: "Fund Transfer", to: "/control/fund-transfer", icon: <FaMoneyBillTransfer />, roles: ["admin","treasurer","assistant-treasurer"] },
     { label: "Cash Book", to: "/control/cash-book", icon: <FaSackDollar />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
+    { label: "Constitution", to: "/control/constitution", icon: <FaAtom />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Transactions Report", to: "/control/transactions-report", icon: <TbReport />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
   ];
 
