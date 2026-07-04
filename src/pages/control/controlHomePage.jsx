@@ -10,6 +10,7 @@ import {
   FaReceipt,
   FaSignOutAlt,
   FaTimes,
+  FaFileAlt,
 } from "react-icons/fa";
 import { FaSackDollar, FaMoneyBillTransfer } from "react-icons/fa6";
 import { TbReport } from "react-icons/tb";
@@ -47,6 +48,7 @@ export default function ControlHomePage() {
     { label: "Fund Transfer", to: "/control/fund-transfer", icon: <FaMoneyBillTransfer />, roles: ["admin","treasurer","assistant-treasurer"] },
     { label: "Cash Book", to: "/control/cash-book", icon: <FaSackDollar />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Constitution", to: "/control/constitution", icon: <FaAtom />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
+    { label: "Meeting Minutes", to: "/control/meeting-minutes", icon: <FaFileAlt />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
     { label: "Transactions Report", to: "/control/transactions-report", icon: <TbReport />, roles: ["admin","president","secretary","treasurer","vice-president","assistant-secretary","assistant-treasurer","activity-coordinator","committee-member","internal-auditor"] },
   ];
 
