@@ -28,7 +28,7 @@ export default function HomePage() {
       id: "prog-3",
       title: "Networking & Mentorship",
       desc: "Providing career guidance and mentorship to current students.",
-      image: "/images/mentorship.png",
+      image: "/images/mentorship.jpg",
     },
   ];
 
