@@ -18,6 +18,7 @@ import VouchersEntry from "./control/voucherEntryPage";
 import FundTransferPage from "./control/fundTransferPage";
 import TransactionReport from "./control/transactionReport";
 import Constitution from "./client/constitutionPage";
+import MeetingMinutesPage from "./client/meetingMinutes";
 import Contact from "./client/contact";
 import NotFoundPage from "./notFoundPage";
 
@@ -99,6 +100,7 @@ export default function ControlPage() {
         <Route path="fund-transfer" element={<FundTransferPage />} />
         <Route path="transactions-report" element={<TransactionReport />} />
         <Route path="constitution" element={<Constitution />} />
+        <Route path="meeting-minutes" element={<MeetingMinutesPage />} />
         <Route path="contact" element={<Contact />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

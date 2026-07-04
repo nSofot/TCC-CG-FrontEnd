@@ -24,6 +24,8 @@ export default function LoginPage() {
         toast.success("Login Successful");
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data));
+        // 🔥 SAVE GOOGLE TOKEN
+        localStorage.setItem("google_token", res.data.googleAccessToken);
 
         navigate("/");
       } catch (error) {
