@@ -110,10 +110,10 @@ export default function EditMember() {
 							'president', 
 							'secretary', 
 							'treasurer', 
+							'coordinating-secretary',
 							'vice-president', 
 							'assistant-secretary', 
 							'assistant-treasurer', 
-							'activity-coordinator', 
 							'committee-member',
 							'internal-auditor'
 							];
@@ -129,7 +129,7 @@ export default function EditMember() {
 			memberRole === 'vice-president' ||
 			memberRole === 'assistant-secretary' ||
 			memberRole === 'assistant-treasurer' ||
-			memberRole === 'activity-coordinator' ||
+			memberRole === 'coordinating-secretary' ||
 			memberRole === 'committee-member' ||
 			memberRole === 'internal-auditor'	
 		) {
@@ -497,10 +497,10 @@ export default function EditMember() {
 									<option value="president">President</option>
 									<option value="secretary">Secretary</option>
 									<option value="treasurer">Treasurer</option>
+									<option value="coordinating-secretary">Coordinating Secretary</option>
 									<option value="vice-president">Vice President</option>
 									<option value="assistant-secretary">Assistant Secretary</option>
 									<option value="assistant-treasurer">Assistant Treasurer</option>
-									<option value="activity-coordinator">Activity Coordinator</option>
 									<option value="committee-member">Committee Member</option>
 									<option value="internal-auditor">Internal Auditor</option>
 								</select>
