@@ -21,10 +21,10 @@ export default function ExCoMembers() {
     "president": "President",
     "secretary": "Secretary",
     "treasurer": "Treasurer",
+    "coordinating-secretary": "Coordinating Secretary",
     "vice-president": "Vice President",
     "assistant-secretary": "Assistant Secretary",
-    "assistant-treasurer": "Assistant Treasurer",
-    "activity-coordinator": "Activity Coordinator",
+    "assistant-treasurer": "Assistant Treasurer", 
     "internal-auditor": "Internal Auditor",
     "committee-member": "Committee Member"
   };  
@@ -44,10 +44,10 @@ export default function ExCoMembers() {
           "president",
           "secretary",
           "treasurer",
+          "coordinating-secretary",
           "vice-president",
           "assistant-secretary",
-          "assistant-treasurer",
-          "activity-coordinator",
+          "assistant-treasurer",          
           "internal-auditor",
           "committee-member"
         ];
