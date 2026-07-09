@@ -7,9 +7,19 @@ import LoadingSpinner from "../../components/loadingSpinner";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [president, setPresident] = useState({});
-  const [treasurer, setTreasurer] = useState({});
-  const [secretary, setSecretary] = useState({});
+  const [excoMembers, setExcoMembers] = useState([]);
+
+  const roleMap = {
+    president: "President",
+    secretary: "Secretary",
+    treasurer: "Treasurer",
+    "coordinating-secretary": "Coordinating Secretary",
+    "vice-president": "Vice President",
+    "assistant-secretary": "Assistant Secretary",
+    "assistant-treasurer": "Assistant Treasurer",
+    "internal-auditor": "Internal Auditor",
+    "committee-member": "Committee Member",
+  };  
 
   const programs = [
     {
@@ -41,24 +51,29 @@ export default function HomePage() {
       .get(import.meta.env.VITE_BACKEND_URL + "/api/member")
       .then((res) => {
 
-        // Filter by roles
-        setPresident(res.data.find(m => m.memberRole === "president") || {});
-        setSecretary(res.data.find(m => m.memberRole === "secretary") || {});
-        setTreasurer(res.data.find(m => m.memberRole === "treasurer") || {});
+        const data = res.data;
 
+        const excoMembers = [
+          data.find((m) => m.memberRole === "president") || {},
+          data.find((m) => m.memberRole === "secretary") || {},
+          data.find((m) => m.memberRole === "treasurer") || {},
+          data.find((m) => m.memberRole === "coordinating-secretary") || {},
+          data.find((m) => m.memberRole === "vice-president") || {},
+          data.find((m) => m.memberRole === "assistant-secretary") || {},
+          data.find((m) => m.memberRole === "assistant-treasurer") || {},
+          data.find((m) => m.memberRole === "internal-auditor") || {},
+          ...data.filter((m) => m.memberRole === "committee-member")
+        ];
+
+        setExcoMembers(excoMembers);
         setIsLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching members:", err);
         setIsLoading(false);
       });
-  }, [location]);
 
-  const exCoMembers = [
-    { name: `${president?.firstName ?? ""} ${president?.lastName ?? ""}`.trim(), role: "President", image: president?.image },
-    { name: `${secretary?.firstName ?? ""} ${secretary?.lastName ?? ""}`.trim(), role: "Secretary", image: secretary?.image },
-    { name: `${treasurer?.firstName ?? ""} ${treasurer?.lastName ?? ""}`.trim(), role: "Treasurer", image: treasurer?.image },
-  ];
+  }, []);
 
 
   const navClass = ({ isActive }) =>
@@ -172,7 +187,7 @@ export default function HomePage() {
       {/* ---------- MEMBERS ---------- */}
       <section className="py-16 px-4 bg-gray-50">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10">
-          MEET OUR MEMBERS
+          MEET OUR OFFICE BEARERS & EXECUTIVE COMMITTEE MEMBERS
         </h2>
 
         {isLoading ? (
@@ -180,23 +195,50 @@ export default function HomePage() {
             <LoadingSpinner />
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-            {exCoMembers.map((m) => (
-              <div
-                key={m.role}   // UNIQUE KEY
-                className="bg-white rounded-2xl shadow p-6 flex flex-col items-center"
-              >
-                <img
-                  src={m.image || "/default-user.png"}   // fallback image
-                  alt={m.name || m.role}
-                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-600"
-                />
-                <h3 className="mt-4 font-bold text-center">
-                  {m.name || "Not Assigned"}
-                </h3>
-                <p className="text-gray-600">{m.role}</p>
-              </div>
-            ))}
+          <div className="max-w-7xl mx-auto space-y-8">
+
+            {/* First Row - 3 Members */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+              {excoMembers.slice(0, 3).map((m, index) => (
+                <div
+                  key={m._id || `${m.memberRole}-${index}`}
+                  className="bg-white rounded-2xl shadow p-6 flex flex-col items-center w-full max-w-sm"
+                >
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={m.image[0] || "/userDefault.jpg"}
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-600"
+                  />
+                  <h3 className="mt-4 font-bold text-center">
+                    {m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : "Not Assigned"}
+                  </h3>
+                  <p className="text-gray-600">{roleMap[m.memberRole] || m.memberRole}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Second Row - Remaining 5 Members */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 justify-items-center">
+              {excoMembers.slice(3).map((m, index) => (
+                <div
+                  key={m._id || `${m.memberRole}-${index}`}
+                  className="bg-white rounded-2xl shadow p-6 flex flex-col items-center w-full max-w-sm"
+                >
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={m.image[0] || "/userDefault.jpg"}
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-600"
+                  />
+                  <h3 className="mt-4 font-bold text-center">
+                    {m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : "Not Assigned"}
+                  </h3>
+                  <p className="text-gray-600">{roleMap[m.memberRole] || m.memberRole}</p>
+                </div>
+              ))}
+            </div>
+
           </div>
         )}
       </section>
