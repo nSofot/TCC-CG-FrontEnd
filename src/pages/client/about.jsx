@@ -2,6 +2,11 @@ import { Fragment } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiUsers, FiHeart, FiCalendar } from "react-icons/fi";
+import {
+  FaYoutube,
+  FaFacebook,
+  FaWhatsapp,
+} from "react-icons/fa";
 
 export default function AboutUs() {
 
@@ -140,6 +145,107 @@ export default function AboutUs() {
           </motion.div>
         </div>
       </section>
+
+      {/* ---------- CONNECT WITH US ---------- */}
+      <section className="w-full py-14 px-4 bg-gray-100">
+        <div className="max-w-6xl mx-auto text-center">
+
+          <motion.h2
+            className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            CONNECT WITH US
+          </motion.h2>
+
+          <motion.p
+            className="text-gray-600 mb-8 text-sm sm:text-base"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Stay connected with the Tholangamuwa Central College Colombo Group
+            through our social media and community channels.
+          </motion.p>
+
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
+
+            {/* YouTube */}
+            <motion.a
+              href="https://www.youtube.com/@TCC--ColomboGroup"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto min-w-[220px] flex items-center justify-center gap-3
+                         px-6 py-4 bg-red-600 text-white rounded-xl shadow-md
+                         hover:bg-red-700 hover:shadow-xl transition"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FaYoutube className="text-3xl" />
+
+              <div className="text-left">
+                <p className="text-xs opacity-80">
+                  FOLLOW OUR
+                </p>
+                <p className="font-bold text-lg">
+                  YouTube Channel
+                </p>
+              </div>
+            </motion.a>
+
+
+            {/* Facebook */}
+            <motion.a
+              href="https://www.facebook.com/groups/1477262159163235"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto min-w-[220px] flex items-center justify-center gap-3
+                         px-6 py-4 bg-blue-600 text-white rounded-xl shadow-md
+                         hover:bg-blue-700 hover:shadow-xl transition"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FaFacebook className="text-3xl" />
+
+              <div className="text-left">
+                <p className="text-xs opacity-80">
+                  FOLLOW OUR
+                </p>
+                <p className="font-bold text-lg">
+                  Facebook Page
+                </p>
+              </div>
+            </motion.a>
+
+
+            {/* WhatsApp */}
+            <motion.a
+              // href="https://wa.me/YOUR_WHATSAPP_NUMBER"
+              href="https://chat.whatsapp.com/GcBIDhnANgaBWfB5f8VjBR"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto min-w-[220px] flex items-center justify-center gap-3
+                         px-6 py-4 bg-green-600 text-white rounded-xl shadow-md
+                         hover:bg-green-700 hover:shadow-xl transition"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FaWhatsapp className="text-3xl" />
+
+              <div className="text-left">
+                <p className="text-xs opacity-80">
+                  JOIN OUR
+                </p>
+                <p className="font-bold text-lg">
+                  WhatsApp Group
+                </p>
+              </div>
+            </motion.a>
+
+          </div>
+        </div>
+      </section>       
 
       {/* ---------- FOOTER ---------- */}
       <footer className="w-full bg-gray-900 text-white py-8 px-4 text-center text-sm">
