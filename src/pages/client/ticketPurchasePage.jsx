@@ -9,7 +9,7 @@ const initialForm = {
   emailAddress: "",
   nicNumber: "",
   address: "",
-  paidAmount: "",
+  paidAmount: "7500.00",
 };
 
 const fields = [
