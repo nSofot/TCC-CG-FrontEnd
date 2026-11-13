@@ -72,6 +72,7 @@ export default function Header() {
     { to: "/gallery", label: "Gallery", icon: FaImage },
     { to: "/about", label: "About Us", icon: FaInfoCircle },
     { to: "/contact", label: "Contact Us", icon: FaPhone },
+    { to: "/tickets", label: "Buy Tickets", icon: FaMoneyCheck },
   ];
 
   // Authenticated links
