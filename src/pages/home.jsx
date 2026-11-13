@@ -7,6 +7,7 @@ import Contact from "./client/contact";
 import Home from "./client/homePage";
 import MemberProfilePage from "./client/memberProfile";
 import NotFoundPage from "./notFoundPage";
+import TicketPurchasePage from "./client/ticketPurchasePage";
 // import MainLayout from "../layout/MainLayout";
 
 function Layout() {
@@ -29,6 +30,7 @@ export default function HomePage() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="tickets" element={<TicketPurchasePage />} />
           <Route path="constitution" element={<ConstitutionPage />} />
           <Route path="member-profile" element={<MemberProfilePage />} />
           

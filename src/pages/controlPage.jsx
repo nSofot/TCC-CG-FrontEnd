@@ -21,6 +21,7 @@ import Constitution from "./client/constitutionPage";
 import MeetingMinutesPage from "./client/meetingMinutes";
 import Contact from "./client/contact";
 import NotFoundPage from "./notFoundPage";
+import TicketOrdersPage from "./control/ticketOrdersPage";
 
 function Layout() {
   return (
@@ -55,7 +56,7 @@ export default function ControlPage() {
       })     
       .then((res) => {
         const role = res.data.memberRole?.toLowerCase();
-        const allowedRoles = ["president", "secretary", "treasurer", "vice-president", "assistant-secretary", "assistant-treasurer","activity-coordinator","committee-member","internal-auditor"];
+        const allowedRoles = ["admin", "president", "secretary", "treasurer", "vice-president", "assistant-secretary", "assistant-treasurer","activity-coordinator","committee-member","internal-auditor"];
         
         if (!allowedRoles.includes(role)) {
           setStatus("unauthorized");
@@ -99,6 +100,7 @@ export default function ControlPage() {
         <Route path="vouchers-entry" element={<VouchersEntry />} />
         <Route path="fund-transfer" element={<FundTransferPage />} />
         <Route path="transactions-report" element={<TransactionReport />} />
+        <Route path="ticket-orders" element={<TicketOrdersPage />} />
         <Route path="constitution" element={<Constitution />} />
         <Route path="meeting-minutes" element={<MeetingMinutesPage />} />
         <Route path="contact" element={<Contact />} />
