@@ -62,20 +62,50 @@ export default function TicketPurchasePage() {
       <div className="bg-gradient-to-br from-indigo-950 via-indigo-800 to-blue-700 px-6 py-9 text-white sm:px-10">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-200">Tholangamuwa Central College · Colombo Group</p>
         <h1 className="mt-3 text-3xl font-bold sm:text-4xl">Buy event tickets</h1>
-        <p className="mt-3 max-w-xl text-indigo-100">Enter your details and upload your payment slip. The committee will review your payment and confirm your ticket.</p>
+        <p className="mt-3 max-w-xl text-indigo-100">Complete your payment first, then send your ticket request with the payment slip. The committee will review it and email your e-ticket.</p>
+      </div>
+
+      <div className="border-b border-slate-200 bg-indigo-50/60 px-6 py-7 sm:px-10">
+        <h2 className="text-xl font-bold text-slate-900">How to purchase your ticket</h2>
+        <ol className="mt-5 space-y-4">
+          <li className="flex gap-4">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-700 text-sm font-bold text-white">1</span>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-slate-900">Make your payment</h3>
+              <p className="mt-1 text-sm text-slate-600">Transfer or deposit the ticket amount to this account. Use your first and last name as the payment reference so we can identify your payment.</p>
+              <dl className="mt-3 grid gap-x-6 gap-y-1 rounded-xl border border-indigo-100 bg-white p-4 text-sm sm:grid-cols-2">
+                <div><dt className="inline font-medium text-slate-700">Account name: </dt><dd className="inline text-slate-600">Colombo Group</dd></div>
+                <div><dt className="inline font-medium text-slate-700">Bank: </dt><dd className="inline text-slate-600">Bank of Ceylon</dd></div>
+                <div className="sm:col-span-2"><dt className="inline font-medium text-slate-700">Account number: </dt><dd className="inline text-slate-600">00934-3343</dd></div>
+              </dl>
+            </div>
+          </li>
+          <li className="flex gap-4">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-700 text-sm font-bold text-white">2</span>
+            <div><h3 className="font-semibold text-slate-900">Save your payment slip</h3><p className="mt-1 text-sm text-slate-600">Take a clear photo of the deposit slip or download your transfer receipt. You’ll attach it to the request.</p></div>
+          </li>
+          <li className="flex gap-4">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-700 text-sm font-bold text-white">3</span>
+            <div><h3 className="font-semibold text-slate-900">Complete and submit the request form</h3><p className="mt-1 text-sm text-slate-600">Enter your details, provide the amount paid, and upload the saved payment slip below.</p></div>
+          </li>
+          <li className="flex gap-4">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-700 text-sm font-bold text-white">4</span>
+            <div><h3 className="font-semibold text-slate-900">Wait for review and receive your e-ticket</h3><p className="mt-1 text-sm text-slate-600">The committee will verify your payment and send your e-ticket once your request is approved.</p></div>
+          </li>
+        </ol>
       </div>
 
       <form onSubmit={submit} className="space-y-6 p-6 sm:p-10">
         <div>
           <label htmlFor="eventName" className="font-semibold text-slate-800">Event name</label>
-          <input id="eventName" name="eventName" value={form.eventName} onChange={update} required maxLength={120} placeholder="Which event are you attending?" className={inputClass} />
+          <input id="eventName" name="eventName" value={form.eventName} readOnly required maxLength={120} placeholder="Which event are you attending?" className={`${inputClass} cursor-not-allowed bg-slate-50 text-slate-600`} />
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
           {fields.map(({ name, label, ...attributes }) => (
             <div key={name}>
               <label htmlFor={name} className="font-semibold text-slate-800">{label}</label>
-              <input id={name} name={name} value={form[name]} onChange={update} required={name !== "emailAddress"} className={inputClass} {...attributes} />
+              <input id={name} name={name} value={form[name]} onChange={update} readOnly={name === "paidAmount"} required={name !== "emailAddress"} className={`${inputClass} ${name === "paidAmount" ? "cursor-not-allowed bg-slate-50 text-slate-600" : ""}`} {...attributes} />
             </div>
           ))}
         </div>

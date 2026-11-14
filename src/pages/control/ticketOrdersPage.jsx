@@ -75,7 +75,15 @@ export default function TicketOrdersPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <style>{`@media print {
+        @page { margin: 14mm; }
+        body { background: #fff !important; }
+        .ticket-orders-no-print { display: none !important; }
+        .ticket-orders-print-only { display: block !important; }
+        .ticket-orders-print-list { display: block !important; }
+        .ticket-orders-print-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #cbd5e1 !important; margin-bottom: 12px !important; }
+      }`}</style>
+      <div className="ticket-orders-no-print flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">Ticket sales</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900">Ticket orders & approvals</h2>
@@ -89,14 +97,20 @@ export default function TicketOrdersPage() {
             </button>
           ))}
           <button type="button" onClick={loadOrders} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-slate-200 hover:bg-indigo-50">Refresh</button>
+          <button type="button" onClick={() => window.print()} disabled={loading || orders.length === 0} className="rounded-full bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50">Print {filter === "all" ? "all" : filter} orders</button>
         </div>
+      </div>
+
+      <div className="ticket-orders-print-only hidden">
+        <h1 className="text-2xl font-bold text-slate-900">Ticket orders · {filter === "all" ? "All statuses" : filter}</h1>
+        <p className="mt-1 text-sm text-slate-600">{orders.length} {orders.length === 1 ? "order" : "orders"} · Printed {new Date().toLocaleString()}</p>
       </div>
 
       {loading ? <div className="rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">Loading ticket orders…</div>
         : orders.length === 0 ? <div className="rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">No {filter === "all" ? "ticket" : filter} orders found.</div>
-          : <div className="space-y-4">
+          : <div className="ticket-orders-print-list space-y-4">
             {orders.map((order) => (
-              <article key={order._id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <article key={order._id} className="ticket-orders-print-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{order.eventName}</p>
@@ -112,17 +126,17 @@ export default function TicketOrdersPage() {
                   <Detail label="NIC number" value={order.nicNumber} />
                   <Detail label="Address" value={order.address} />
                   <Detail label="Paid amount" value={currency.format(order.paidAmount)} />
-                  <div>
+                  <div className="ticket-orders-no-print">
                     <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Payment slip</dt>
                     <dd className="mt-1"><button type="button" onClick={() => showSlip(order)} className="font-semibold text-indigo-700 underline underline-offset-2 hover:text-indigo-900">View payment slip</button></dd>
                   </div>
                 </dl>
 
-                {order.status === "pending" && <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-4">
+                {order.status === "pending" && <div className="ticket-orders-no-print flex flex-wrap gap-3 border-t border-slate-100 pt-4">
                   <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, "approved")} className="rounded-lg bg-green-700 px-5 py-2.5 font-semibold text-white hover:bg-green-800 disabled:opacity-50">{busyId === order._id ? "Saving…" : "Approve ticket"}</button>
                   <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, "rejected")} className="rounded-lg border border-red-200 px-5 py-2.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50">Reject</button>
                 </div>}
-                {order.status !== "pending" && order.emailAddress && <div className="border-t border-slate-100 pt-4">
+                {order.status !== "pending" && order.emailAddress && <div className="ticket-orders-no-print border-t border-slate-100 pt-4">
                   <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, order.status)} className="rounded-lg border border-indigo-200 px-4 py-2 font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
                     {busyId === order._id ? "Sending…" : order.status === "approved" ? "Resend e-ticket" : "Resend rejection email"}
                   </button>
