@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const initialForm = {
@@ -21,12 +21,36 @@ const fields = [
   { name: "paidAmount", label: "Amount paid (LKR)", type: "number", min: "0.01", step: "0.01" },
 ];
 
+const TICKET_CAPACITY = 100;
+
 export default function TicketPurchasePage() {
   const [form, setForm] = useState(initialForm);
   const [slip, setSlip] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [ticketsSold, setTicketsSold] = useState(25);
+  const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+
+  async function loadAvailability() {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ticket-orders/availability`);
+      const sold = 25 + Number(response.data.sold);
+      if (Number.isFinite(sold)) setTicketsSold(Math.min(TICKET_CAPACITY, Math.max(0, sold)));
+    } catch (availabilityError) {
+      console.error("Could not load ticket availability:", availabilityError);
+    } finally {
+      setAvailabilityLoaded(true);
+    }
+  }
+
+  useEffect(() => {
+    loadAvailability();
+  }, []);
+
+  const ticketsRemaining = Math.max(0, TICKET_CAPACITY - ticketsSold);
+  const soldPercentage = Math.round((ticketsSold / TICKET_CAPACITY) * 100);
+  const ticketsSoldOut = availabilityLoaded && ticketsSold >= TICKET_CAPACITY;
 
   const update = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
 
@@ -34,9 +58,10 @@ export default function TicketPurchasePage() {
     event.preventDefault();
     setError("");
     setMessage("");
+    if (ticketsSoldOut) return setError("All tickets have been sold. Ticket purchases are closed.");
     if (!slip) return setError("Please attach your payment slip.");
 
-    const data = new FormData();
+    const data = new FormData(); 
     Object.entries(form).forEach(([key, value]) => data.append(key, value));
     data.append("paymentSlip", slip);
 
@@ -48,6 +73,7 @@ export default function TicketPurchasePage() {
       setForm(initialForm);
       setSlip(null);
       event.target.reset();
+      loadAvailability();
     } catch (requestError) {
       setError(requestError.response?.data?.message || "We could not submit your request. Please try again.");
     } finally {
@@ -62,6 +88,19 @@ export default function TicketPurchasePage() {
       <div className="bg-gradient-to-br from-indigo-950 via-indigo-800 to-blue-700 px-6 py-9 text-white sm:px-10">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-200">Tholangamuwa Central College · Colombo Group</p>
         <h1 className="mt-3 text-3xl font-bold sm:text-4xl">Buy event tickets</h1>
+        <div className="mt-6 max-w-xl rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm sm:p-5" aria-label={`${ticketsRemaining} of ${TICKET_CAPACITY} tickets remaining`}>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-indigo-100">Tickets remaining</p>
+              <p className="mt-1 text-2xl font-bold sm:text-3xl">{ticketsRemaining} <span className="text-base font-medium text-indigo-100">of {TICKET_CAPACITY}</span></p>
+            </div>
+            <p className="shrink-0 rounded-full bg-white px-3 py-1 text-sm font-bold text-indigo-800">{soldPercentage}% sold</p>
+          </div>
+          <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-indigo-950/50" role="progressbar" aria-label="Tickets sold" aria-valuemin={0} aria-valuemax={TICKET_CAPACITY} aria-valuenow={ticketsSold} aria-valuetext={`${ticketsSold} of ${TICKET_CAPACITY} sold`}>
+            <div className="h-full rounded-full bg-amber-300 transition-[width] duration-500" style={{ width: `${(ticketsSold / TICKET_CAPACITY) * 100}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-indigo-100">{ticketsSoldOut ? "Sold out" : `${ticketsSold} of ${TICKET_CAPACITY} tickets sold${!availabilityLoaded ? " · Updating…" : ""}`}</p>
+        </div>
         <p className="mt-3 max-w-xl text-indigo-100">Complete your payment first, then send your ticket request with the payment slip. The committee will review it and email your e-ticket.</p>
       </div>
 
@@ -96,6 +135,7 @@ export default function TicketPurchasePage() {
       </div>
 
       <form onSubmit={submit} className="space-y-6 p-6 sm:p-10">
+        {ticketsSoldOut && <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">All tickets have been sold. Ticket purchases are closed.</p>}
         <div>
           <label htmlFor="eventName" className="font-semibold text-slate-800">Event name</label>
           <input id="eventName" name="eventName" value={form.eventName} readOnly required maxLength={120} placeholder="Which event are you attending?" className={`${inputClass} cursor-not-allowed bg-slate-50 text-slate-600`} />
@@ -124,8 +164,8 @@ export default function TicketPurchasePage() {
         <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Your order will remain pending until the payment slip is reviewed. Please ensure the paid amount matches the ticket payment.</p>
         {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">{error}</p>}
         {message && <p role="status" className="rounded-xl bg-green-50 p-4 text-sm font-medium text-green-800">{message}</p>}
-        <button type="submit" disabled={submitting} className="w-full rounded-xl bg-indigo-700 px-5 py-4 font-bold text-white transition hover:bg-indigo-800 disabled:cursor-wait disabled:opacity-60">
-          {submitting ? "Submitting…" : "Submit ticket request"}
+        <button type="submit" disabled={submitting || ticketsSoldOut} className="w-full rounded-xl bg-indigo-700 px-5 py-4 font-bold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-60">
+          {ticketsSoldOut ? "Tickets sold out" : submitting ? "Submitting…" : "Submit ticket request"}
         </button>
       </form>
     </section>
