@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -22,36 +23,75 @@ export default function TicketOrdersPage() {
   const [busyId, setBusyId] = useState("");
   const [slip, setSlip] = useState(null);
 
+  const currency = new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+  });
+
+  const totalAmount = orders.reduce(
+    (total, order) => total + Number(order.paidAmount || 0),
+    0
+  );
+
   const loadOrders = useCallback(async () => {
     setLoading(true);
+
     try {
       const token = localStorage.getItem("token");
+
       const response = await axios.get(apiUrl, {
         params: filter === "all" ? {} : { status: filter },
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       setOrders(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Could not load ticket orders.");
+      toast.error(
+        error.response?.data?.message ||
+          "Could not load ticket orders."
+      );
     } finally {
       setLoading(false);
     }
   }, [filter]);
 
-  useEffect(() => { loadOrders(); }, [loadOrders]);
-  useEffect(() => () => { if (slip?.url) URL.revokeObjectURL(slip.url); }, [slip]);
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
+
+  useEffect(() => {
+    return () => {
+      if (slip?.url) {
+        URL.revokeObjectURL(slip.url);
+      }
+    };
+  }, [slip]);
 
   async function reviewOrder(orderId, status) {
     setBusyId(orderId);
+
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.patch(`${apiUrl}/${orderId}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+      const response = await axios.patch(
+        `${apiUrl}/${orderId}/status`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       toast.success(response.data.message);
       await loadOrders();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Could not update ticket order.");
+      toast.error(
+        error.response?.data?.message ||
+          "Could not update ticket order."
+      );
     } finally {
       setBusyId("");
     }
@@ -60,101 +100,553 @@ export default function TicketOrdersPage() {
   async function showSlip(order) {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${apiUrl}/${order._id}/payment-slip`, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: "blob",
-      });
+
+      const response = await axios.get(
+        `${apiUrl}/${order._id}/payment-slip`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
+
       const url = URL.createObjectURL(response.data);
-      setSlip({ url, type: response.data.type, name: `${order.firstName} ${order.lastName}` });
+
+      setSlip({
+        url,
+        type: response.data.type,
+        name: `${order.firstName} ${order.lastName}`,
+      });
     } catch {
       toast.error("Could not open the payment slip.");
     }
   }
 
-  const currency = new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" });
-
   return (
     <section className="space-y-6">
-      <style>{`@media print {
-        @page { margin: 14mm; }
-        body { background: #fff !important; }
-        .ticket-orders-no-print { display: none !important; }
-        .ticket-orders-print-only { display: block !important; }
-        .ticket-orders-print-list { display: block !important; }
-        .ticket-orders-print-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #cbd5e1 !important; margin-bottom: 12px !important; }
-      }`}</style>
+
+      {/* PRINT STYLES */}
+      <style>{`
+        .ticket-orders-print-only {
+          display: none;
+        }
+
+        @media print {
+
+          @page {
+            size: A4 portrait;
+            margin: 12mm 10mm;
+          }
+
+          html,
+          body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          body * {
+            visibility: hidden;
+          }
+
+          .ticket-orders-print-area,
+          .ticket-orders-print-area * {
+            visibility: visible;
+          }
+
+          .ticket-orders-print-area {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+          }
+
+          .ticket-orders-no-print {
+            display: none !important;
+          }
+
+          .ticket-orders-print-only {
+            display: block !important;
+          }
+
+          .ticket-orders-print-list {
+            display: block !important;
+          }
+
+          .ticket-orders-print-card {
+            display: none !important;
+          }
+
+          /* PRINT HEADER */
+
+          .ticket-orders-print-header {
+            text-align: center;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #1e293b;
+          }
+
+          /* PRINT TABLE */
+
+          .ticket-orders-print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+            font-size: 10px;
+            table-layout: fixed;
+          }
+
+          .ticket-orders-print-table th {
+            background: #e8eefc !important;
+            color: #1e293b !important;
+            font-weight: 700;
+            text-align: left;
+            padding: 9px 6px;
+            border: 1px solid #94a3b8;
+            vertical-align: middle;
+          }
+
+          .ticket-orders-print-table td {
+            padding: 9px 6px;
+            border: 1px solid #cbd5e1;
+            color: #1e293b !important;
+            vertical-align: middle;
+            overflow-wrap: anywhere;
+          }
+
+          .ticket-orders-print-table tbody tr:nth-child(even) {
+            background: #f8fafc !important;
+          }
+
+          .ticket-orders-print-table tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          /* TOTAL */
+
+          .ticket-orders-print-table tfoot td {
+            background: #e8eefc !important;
+            font-weight: 700;
+            border-top: 2px solid #64748b;
+            padding: 11px 6px;
+          }
+
+          /* FOOTER */
+
+          .ticket-orders-print-footer {
+            margin-top: 25px;
+            padding-top: 10px;
+            border-top: 1px solid #cbd5e1;
+            text-align: center;
+            font-size: 9px;
+            color: #64748b !important;
+          }
+        }
+      `}</style>
+
+      {/* PAGE HEADER AND FILTERS */}
       <div className="ticket-orders-no-print flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">Ticket sales</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900">Ticket orders & approvals</h2>
-          <p className="mt-1 text-sm text-slate-600">Check buyer details and payment slips before confirming an order.</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">
+            Ticket sales
+          </p>
+
+          <h2 className="mt-1 text-2xl font-bold text-slate-900">
+            Ticket orders & approvals
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-600">
+            Check buyer details and payment slips before confirming an order.
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter ticket orders">
+
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter ticket orders"
+        >
           {statuses.map((status) => (
-            <button key={status} type="button" onClick={() => setFilter(status)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold capitalize ${filter === status ? "bg-indigo-700 text-white" : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"}`}>
+            <button
+              key={status}
+              type="button"
+              onClick={() => setFilter(status)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold capitalize ${
+                filter === status
+                  ? "bg-indigo-700 text-white"
+                  : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+              }`}
+            >
               {status}
             </button>
           ))}
-          <button type="button" onClick={loadOrders} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-slate-200 hover:bg-indigo-50">Refresh</button>
-          <button type="button" onClick={() => window.print()} disabled={loading || orders.length === 0} className="rounded-full bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50">Print {filter === "all" ? "all" : filter} orders</button>
+
+          <button
+            type="button"
+            onClick={loadOrders}
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-slate-200 hover:bg-indigo-50"
+          >
+            Refresh
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.print()}
+            disabled={loading || orders.length === 0}
+            className="rounded-full bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Print {filter === "all" ? "All" : filter} Orders
+          </button>
         </div>
       </div>
 
-      <div className="ticket-orders-print-only hidden">
-        <h1 className="text-2xl font-bold text-slate-900">Ticket orders · {filter === "all" ? "All statuses" : filter}</h1>
-        <p className="mt-1 text-sm text-slate-600">{orders.length} {orders.length === 1 ? "order" : "orders"} · Printed {new Date().toLocaleString()}</p>
-      </div>
+      {/* PRINT AREA */}
+      <div className="ticket-orders-print-area">
 
-      {loading ? <div className="rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">Loading ticket orders…</div>
-        : orders.length === 0 ? <div className="rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">No {filter === "all" ? "ticket" : filter} orders found.</div>
-          : <div className="ticket-orders-print-list space-y-4">
+        {/* PRINT HEADER */}
+        <div className="ticket-orders-print-only ticket-orders-print-header">
+
+          <h1 className="text-2xl font-bold tracking-wider text-slate-900">
+            TCC COLOMBO GROUP
+          </h1>
+
+          <h2 className="mt-2 text-base font-bold text-slate-800">
+            COLOMBO NIGHT 2027
+          </h2>
+
+          <p className="mt-1 text-sm font-semibold text-slate-600">
+            TICKET PAYMENT REGISTER
+          </p>
+
+          <p className="mt-3 text-xs text-slate-500">
+            {filter === "all"
+              ? "All Ticket Orders"
+              : `${filter.charAt(0).toUpperCase()}${filter.slice(1)} Ticket Orders`}
+            {" | "}
+            Printed: {new Date().toLocaleString()}
+          </p>
+
+        </div>
+
+        {/* ORDER CONTENT */}
+        {loading ? (
+
+          <div className="ticket-orders-no-print rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">
+            Loading ticket orders…
+          </div>
+
+        ) : orders.length === 0 ? (
+
+          <div className="ticket-orders-no-print rounded-2xl bg-white p-10 text-center text-slate-500 shadow-sm">
+            No {filter === "all" ? "ticket" : filter} orders found.
+          </div>
+
+        ) : (
+
+          <div className="ticket-orders-print-list space-y-4">
+
+            {/* A4 PORTRAIT PRINT TABLE */}
+            <table className="ticket-orders-print-only ticket-orders-print-table">
+
+              <thead>
+                <tr>
+
+                  <th style={{ width: "23%" }}>
+                    Reference No.
+                  </th>
+
+                  <th style={{ width: "25%" }}>
+                    Name
+                  </th>
+
+                  <th style={{ width: "17%" }}>
+                    Mobile
+                  </th>
+
+                  <th style={{ width: "17%" }}>
+                    NIC No.
+                  </th>
+
+                  <th style={{ width: "18%", textAlign: "right" }}>
+                    Amount (LKR)
+                  </th>
+
+                </tr>
+              </thead>
+
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order._id}>
+
+                    <td className="font-semibold">
+                      {order.referenceNumber ||
+                        `TCC-LEGACY-${order._id.slice(-6).toUpperCase()}`}
+                    </td>
+
+                    <td>
+                      {order.firstName} {order.lastName}
+                    </td>
+
+                    <td>
+                      {order.mobileNumber || "—"}
+                    </td>
+
+                    <td>
+                      {order.nicNumber || "—"}
+                    </td>
+
+                    <td style={{ textAlign: "right" }}>
+                      {currency.format(
+                        Number(order.paidAmount || 0)
+                      )}
+                    </td>
+
+                  </tr>
+                ))}
+              </tbody>
+
+              {/* TOTAL AMOUNT */}
+              <tfoot>
+                <tr>
+
+                  <td
+                    colSpan={4}
+                    style={{ textAlign: "right" }}
+                  >
+                    TOTAL AMOUNT
+                  </td>
+
+                  <td style={{ textAlign: "right" }}>
+                    {currency.format(totalAmount)}
+                  </td>
+
+                </tr>
+              </tfoot>
+
+            </table>
+
+            {/* PRINT FOOTER */}
+            <div className="ticket-orders-print-only ticket-orders-print-footer">
+              TCC Colombo Group | Colombo Night 2027
+            </div>
+
+            {/* NORMAL SCREEN ORDER CARDS */}
             {orders.map((order) => (
-              <article key={order._id} className="ticket-orders-print-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <article
+                key={order._id}
+                className="ticket-orders-print-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+              >
+
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{order.eventName}</p>
-                    <h3 className="mt-1 text-lg font-bold text-slate-900">{order.firstName} {order.lastName}</h3>
-                    <p className="mt-1 text-xs text-slate-500">Submitted {formatDate(order.createdAt)} · Ref {order.referenceNumber || `TCC-LEGACY-${order._id.slice(-6).toUpperCase()}`}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      {order.eventName}
+                    </p>
+
+                    <h3 className="mt-1 text-lg font-bold text-slate-900">
+                      {order.firstName} {order.lastName}
+                    </h3>
+
+                    <p className="mt-1 text-xs text-slate-500">
+                      Submitted {formatDate(order.createdAt)}
+                      {" · "}
+                      Ref{" "}
+                      {order.referenceNumber ||
+                        `TCC-LEGACY-${order._id.slice(-6).toUpperCase()}`}
+                    </p>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${statusClass(order.status)}`}>{order.status}</span>
+
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${statusClass(order.status)}`}
+                  >
+                    {order.status}
+                  </span>
+
                 </div>
 
                 <dl className="grid gap-x-6 gap-y-4 py-5 sm:grid-cols-2 lg:grid-cols-3">
-                  <Detail label="Mobile number" value={order.mobileNumber} />
-                  <Detail label="Email address" value={order.emailAddress} />
-                  <Detail label="NIC number" value={order.nicNumber} />
-                  <Detail label="Address" value={order.address} />
-                  <Detail label="Paid amount" value={currency.format(order.paidAmount)} />
+
+                  <Detail
+                    label="Mobile number"
+                    value={order.mobileNumber}
+                  />
+
+                  <Detail
+                    label="Email address"
+                    value={order.emailAddress}
+                  />
+
+                  <Detail
+                    label="NIC number"
+                    value={order.nicNumber}
+                  />
+
+                  <Detail
+                    label="Address"
+                    value={order.address}
+                  />
+
+                  <Detail
+                    label="Paid amount"
+                    value={currency.format(order.paidAmount || 0)}
+                  />
+
                   <div className="ticket-orders-no-print">
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Payment slip</dt>
-                    <dd className="mt-1"><button type="button" onClick={() => showSlip(order)} className="font-semibold text-indigo-700 underline underline-offset-2 hover:text-indigo-900">View payment slip</button></dd>
+
+                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Payment slip
+                    </dt>
+
+                    <dd className="mt-1">
+                      <button
+                        type="button"
+                        onClick={() => showSlip(order)}
+                        className="font-semibold text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
+                      >
+                        View payment slip
+                      </button>
+                    </dd>
+
                   </div>
+
                 </dl>
 
-                {order.status === "pending" && <div className="ticket-orders-no-print flex flex-wrap gap-3 border-t border-slate-100 pt-4">
-                  <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, "approved")} className="rounded-lg bg-green-700 px-5 py-2.5 font-semibold text-white hover:bg-green-800 disabled:opacity-50">{busyId === order._id ? "Saving…" : "Approve ticket"}</button>
-                  <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, "rejected")} className="rounded-lg border border-red-200 px-5 py-2.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50">Reject</button>
-                </div>}
-                {order.status !== "pending" && order.emailAddress && <div className="ticket-orders-no-print border-t border-slate-100 pt-4">
-                  <button type="button" disabled={busyId === order._id} onClick={() => reviewOrder(order._id, order.status)} className="rounded-lg border border-indigo-200 px-4 py-2 font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
-                    {busyId === order._id ? "Sending…" : order.status === "approved" ? "Resend e-ticket" : "Resend rejection email"}
-                  </button>
-                </div>}
+                {/* APPROVE / REJECT */}
+                {order.status === "pending" && (
+
+                  <div className="ticket-orders-no-print flex flex-wrap gap-3 border-t border-slate-100 pt-4">
+
+                    <button
+                      type="button"
+                      disabled={busyId === order._id}
+                      onClick={() => reviewOrder(order._id, "approved")}
+                      className="rounded-lg bg-green-700 px-5 py-2.5 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+                    >
+                      {busyId === order._id
+                        ? "Saving…"
+                        : "Approve ticket"}
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={busyId === order._id}
+                      onClick={() => reviewOrder(order._id, "rejected")}
+                      className="rounded-lg border border-red-200 px-5 py-2.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+
+                  </div>
+                )}
+
+                {/* RESEND EMAIL */}
+                {order.status !== "pending" && order.emailAddress && (
+
+                  <div className="ticket-orders-no-print border-t border-slate-100 pt-4">
+
+                    <button
+                      type="button"
+                      disabled={busyId === order._id}
+                      onClick={() => reviewOrder(order._id, order.status)}
+                      className="rounded-lg border border-indigo-200 px-4 py-2 font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-50"
+                    >
+                      {busyId === order._id
+                        ? "Sending…"
+                        : order.status === "approved"
+                          ? "Resend e-ticket"
+                          : "Resend rejection email"}
+                    </button>
+
+                  </div>
+                )}
+
               </article>
             ))}
-          </div>}
 
-      {slip && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4" role="presentation" onClick={() => setSlip(null)}>
-        <div role="dialog" aria-modal="true" aria-label={`Payment slip for ${slip.name}`} onClick={(event) => event.stopPropagation()} className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-          <div className="flex items-center justify-between border-b p-4"><h3 className="font-bold text-slate-900">Payment slip · {slip.name}</h3><button type="button" onClick={() => setSlip(null)} className="rounded-lg px-3 py-1 text-slate-600 hover:bg-slate-100" aria-label="Close payment slip">Close</button></div>
-          <div className="min-h-0 overflow-auto p-3 text-center">{slip.type === "application/pdf" ? <iframe title="Payment slip PDF" src={slip.url} className="h-[75vh] w-full" /> : <img src={slip.url} alt={`Payment slip for ${slip.name}`} className="mx-auto max-h-[75vh] max-w-full object-contain" />}</div>
+          </div>
+        )}
+      </div>
+
+      {/* PAYMENT SLIP MODAL */}
+      {slip && (
+
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4"
+          role="presentation"
+          onClick={() => setSlip(null)}
+        >
+
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Payment slip for ${slip.name}`}
+            onClick={(event) => event.stopPropagation()}
+            className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+
+            <div className="flex items-center justify-between border-b p-4">
+
+              <h3 className="font-bold text-slate-900">
+                Payment slip · {slip.name}
+              </h3>
+
+              <button
+                type="button"
+                onClick={() => setSlip(null)}
+                className="rounded-lg px-3 py-1 text-slate-600 hover:bg-slate-100"
+                aria-label="Close payment slip"
+              >
+                Close
+              </button>
+
+            </div>
+
+            <div className="min-h-0 overflow-auto p-3 text-center">
+
+              {slip.type === "application/pdf" ? (
+
+                <iframe
+                  title="Payment slip PDF"
+                  src={slip.url}
+                  className="h-[75vh] w-full"
+                />
+
+              ) : (
+
+                <img
+                  src={slip.url}
+                  alt={`Payment slip for ${slip.name}`}
+                  className="mx-auto max-h-[75vh] max-w-full object-contain"
+                />
+
+              )}
+
+            </div>
+
+          </div>
         </div>
-      </div>}
+      )}
+
     </section>
   );
 }
 
 function Detail({ label, value }) {
-  return <div className="min-w-0"><dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt><dd className="mt-1 break-words font-medium text-slate-800">{value || "—"}</dd></div>;
+  return (
+    <div className="min-w-0">
+
+      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {label}
+      </dt>
+
+      <dd className="mt-1 break-words font-medium text-slate-800">
+        {value || "—"}
+      </dd>
+
+    </div>
+  );
 }
