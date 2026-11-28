@@ -366,10 +366,6 @@ export default function TicketOrdersPage() {
                     Mobile
                   </th>
 
-                  <th style={{ width: "17%" }}>
-                    NIC No.
-                  </th>
-
                   <th style={{ width: "18%", textAlign: "right" }}>
                     Amount (LKR)
                   </th>
@@ -392,10 +388,6 @@ export default function TicketOrdersPage() {
 
                     <td>
                       {order.mobileNumber || "—"}
-                    </td>
-
-                    <td>
-                      {order.nicNumber || "—"}
                     </td>
 
                     <td style={{ textAlign: "right" }}>
@@ -478,16 +470,6 @@ export default function TicketOrdersPage() {
                   <Detail
                     label="Email address"
                     value={order.emailAddress}
-                  />
-
-                  <Detail
-                    label="NIC number"
-                    value={order.nicNumber}
-                  />
-
-                  <Detail
-                    label="Address"
-                    value={order.address}
                   />
 
                   <Detail

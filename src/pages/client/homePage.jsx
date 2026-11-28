@@ -212,7 +212,7 @@ export default function HomePage() {
                   <img
                     loading="lazy"
                     decoding="async"
-                    src={m.image[0] || "/userDefault.jpg"}
+                    src={m?.image?.[0] || "/userDefault.jpg"}
                     className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-600"
                   />
                   <h3 className="mt-4 font-bold text-center">
@@ -233,7 +233,7 @@ export default function HomePage() {
                   <img
                     loading="lazy"
                     decoding="async"
-                    src={m.image[0] || "/userDefault.jpg"}
+                    src={m?.image?.[0] || "/userDefault.jpg"}
                     className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-600"
                   />
                   <h3 className="mt-4 font-bold text-center">
