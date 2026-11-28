@@ -7,8 +7,6 @@ const initialForm = {
   lastName: "",
   mobileNumber: "",
   emailAddress: "",
-  nicNumber: "",
-  address: "",
   paidAmount: "7500.00",
 };
 
@@ -16,12 +14,11 @@ const fields = [
   { name: "firstName", label: "First name", autoComplete: "given-name" },
   { name: "lastName", label: "Last name", autoComplete: "family-name" },
   { name: "mobileNumber", label: "Mobile number", type: "tel", autoComplete: "tel" },
-  { name: "emailAddress", label: "Email address (optional)", type: "email", autoComplete: "email" },
-  { name: "nicNumber", label: "NIC number", autoComplete: "off" },
+  { name: "emailAddress", label: "Email address", type: "email", autoComplete: "email" },
   { name: "paidAmount", label: "Amount paid (LKR)", type: "number", min: "0.01", step: "0.01" },
 ];
 
-const TICKET_CAPACITY = 100;
+const TICKET_CAPACITY = 75;
 
 export default function TicketPurchasePage() {
   const [form, setForm] = useState(initialForm);
@@ -29,13 +26,13 @@ export default function TicketPurchasePage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [ticketsSold, setTicketsSold] = useState(25);
+  const [ticketsSold, setTicketsSold] = useState(0);
   const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
 
   async function loadAvailability() {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/ticket-orders/availability`);
-      const sold = 25 + Number(response.data.sold);
+      const sold = Number(response.data.sold);
       if (Number.isFinite(sold)) setTicketsSold(Math.min(TICKET_CAPACITY, Math.max(0, sold)));
     } catch (availabilityError) {
       console.error("Could not load ticket availability:", availabilityError);
@@ -101,7 +98,7 @@ export default function TicketPurchasePage() {
           </div>
           <p className="mt-2 text-xs text-indigo-100">{ticketsSoldOut ? "Sold out" : `${ticketsSold} of ${TICKET_CAPACITY} tickets sold${!availabilityLoaded ? " · Updating…" : ""}`}</p>
         </div>
-        <p className="mt-3 max-w-xl text-indigo-100">Complete your payment first, then send your ticket request with the payment slip. The committee will review it and email your e-ticket.</p>
+        <p className="mt-3 max-w-xl text-indigo-100">Complete your payment first, then send your ticket request with the payment slip. The committee will review it and email your e-ticket. If you have any questions, feel free to contact Bharatha - 0773248542</p>
       </div>
 
       <div className="border-b border-slate-200 bg-indigo-50/60 px-6 py-7 sm:px-10">
@@ -112,11 +109,27 @@ export default function TicketPurchasePage() {
             <div className="min-w-0">
               <h3 className="font-semibold text-slate-900">Make your payment</h3>
               <p className="mt-1 text-sm text-slate-600">Transfer or deposit the ticket amount to this account. Use your first and last name as the payment reference so we can identify your payment.</p>
-              <dl className="mt-3 grid gap-x-6 gap-y-1 rounded-xl border border-indigo-100 bg-white p-4 text-sm sm:grid-cols-2">
-                <div><dt className="inline font-medium text-slate-700">Account name: </dt><dd className="inline text-slate-600">Colombo Group</dd></div>
-                <div><dt className="inline font-medium text-slate-700">Bank: </dt><dd className="inline text-slate-600">Bank of Ceylon</dd></div>
-                <div className="sm:col-span-2"><dt className="inline font-medium text-slate-700">Account number: </dt><dd className="inline text-slate-600">00934-3343</dd></div>
-              </dl>
+                <dl className="mt-3 grid gap-y-2 rounded-xl border border-indigo-100 bg-white p-4 text-sm">
+                  <div>
+                    <dt className="inline font-medium text-slate-700">Account name: </dt>
+                    <dd className="inline text-slate-600">Tholangamuwa Central PS Colombo Group</dd>
+                  </div>
+
+                  <div>
+                    <dt className="inline font-medium text-slate-700">Account number: </dt>
+                    <dd className="inline text-slate-600">174-100110013005</dd>
+                  </div>
+
+                  <div>
+                    <dt className="inline font-medium text-slate-700">Bank: </dt>
+                    <dd className="inline text-slate-600">People's Bank</dd>
+                  </div>
+
+                  <div>
+                    <dt className="inline font-medium text-slate-700">Branch: </dt>
+                    <dd className="inline text-slate-600">Nugegoda</dd>
+                  </div>
+                </dl>
             </div>
           </li>
           <li className="flex gap-4">
@@ -145,20 +158,15 @@ export default function TicketPurchasePage() {
           {fields.map(({ name, label, ...attributes }) => (
             <div key={name}>
               <label htmlFor={name} className="font-semibold text-slate-800">{label}</label>
-              <input id={name} name={name} value={form[name]} onChange={update} readOnly={name === "paidAmount"} required={name !== "emailAddress"} className={`${inputClass} ${name === "paidAmount" ? "cursor-not-allowed bg-slate-50 text-slate-600" : ""}`} {...attributes} />
+              <input id={name} name={name} value={form[name]} onChange={update} readOnly={name === "paidAmount"} required className={`${inputClass} ${name === "paidAmount" ? "cursor-not-allowed bg-slate-50 text-slate-600" : ""}`} {...attributes} />
             </div>
           ))}
         </div>
 
         <div>
-          <label htmlFor="address" className="font-semibold text-slate-800">Address</label>
-          <textarea id="address" name="address" value={form.address} onChange={update} required rows={3} maxLength={500} autoComplete="street-address" className={inputClass} />
-        </div>
-
-        <div>
           <label htmlFor="paymentSlip" className="font-semibold text-slate-800">Payment slip</label>
-          <input id="paymentSlip" name="paymentSlip" type="file" required accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setSlip(e.target.files?.[0] || null)} className={`${inputClass} file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:font-semibold file:text-indigo-700`} />
-          <p className="mt-2 text-sm text-slate-500">JPG, PNG, WebP, or PDF · Up to 5 MB</p>
+          <input id="paymentSlip" name="paymentSlip" type="file" required accept="image/jpeg,image/png,image/webp" onChange={(e) => setSlip(e.target.files?.[0] || null)} className={`${inputClass} file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:font-semibold file:text-indigo-700`} />
+          <p className="mt-2 text-sm text-slate-500">JPG, PNG, or WebP image · Up to 5 MB</p>
         </div>
 
         <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Your order will remain pending until the payment slip is reviewed. Please ensure the paid amount matches the ticket payment.</p>
